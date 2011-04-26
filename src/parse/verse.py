@@ -4,7 +4,6 @@ __author__ = 'Yadavito'
 from mcab.mecabTool import MecabTool
 
 def parse_verse(verse, ignore=[]):
-#    parsed = MecabTool.parseToWordsFull(unicode(verse, 'utf-8'))
     parsed = MecabTool.parseToWordsFull(unicode(verse))
     verse_key = u''
     for word in parsed:
