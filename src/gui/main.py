@@ -4,7 +4,9 @@ __author__ = 'Yadavito'
 # own #
 from parse.verse import parse_verse
 from printer.printing import print_document
-from utils.const import __version__, _name, WIDTH, HEIGHT
+from utils.const import __version__, _name, WIDTH, HEIGHT,\
+                        ROOT, RES, ICONS,\
+                        PARSE, PDF, FONT, TOGGLE, EXCLUDE, OPTIONS
 
 # external #
 from PyQt4.QtGui import *
@@ -50,6 +52,14 @@ class GUI(QWidget):
         self.font.setCheckable(True)
         self.exclude.setCheckable(True)
         self.options.setCheckable(True)
+
+        # icons
+        self.parse.setIcon(QIcon(ROOT + RES + ICONS + PARSE ))
+        self.topdf.setIcon(QIcon(ROOT + RES + ICONS + PDF ))
+        self.font.setIcon(QIcon(ROOT + RES + ICONS + FONT ))
+        self.toggle.setIcon(QIcon(ROOT + RES + ICONS + TOGGLE ))
+        self.exclude.setIcon(QIcon(ROOT + RES + ICONS + EXCLUDE ))
+        self.options.setIcon(QIcon(ROOT + RES + ICONS + OPTIONS ))
 
     def initActions(self):
         self.parse.clicked.connect(self.parseNPrint)

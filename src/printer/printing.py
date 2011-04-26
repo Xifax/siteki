@@ -7,7 +7,7 @@ from PyQt4.QtGui import QPrinter, QTextDocument, QPrintPreviewDialog
 from PyQt4.QtCore import Qt
 
 # own #
-from utils.const import page_breakline, page_end
+from utils.const import page_breakline, page_end, ROOT
 
 def print_document(document, verse_key, pdf = False, copies=1):
     printer = QPrinter(QPrinter.HighResolution)
@@ -15,7 +15,7 @@ def print_document(document, verse_key, pdf = False, copies=1):
     if not pdf: printer.setOutputFormat(QPrinter.NativeFormat)
     else:
         printer.setOutputFormat(QPrinter.PdfFormat)
-        printer.setOutputFileName('../verse.pdf')
+        printer.setOutputFileName(ROOT + 'verse.pdf')
     printer.setPaperSize(QPrinter.A4)
     printer.setCopyCount(copies)
 

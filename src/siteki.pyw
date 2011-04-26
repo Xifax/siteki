@@ -10,14 +10,16 @@ __author__ = 'Yadavito'
 import sys, ctypes
 
 # external #
-from PyQt4.QtGui import QApplication
+from PyQt4.QtGui import QApplication, QIcon
 
 # own #
 from gui.main import GUI
-from utils.const import _name, __version__, _separator, _company
+from utils.const import _name, __version__, _separator, _company,\
+                        ROOT, RES, ICONS, LOGO
 
 def main():
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon(ROOT + RES + ICONS + LOGO))
 
     gui = GUI()
     gui.show()
