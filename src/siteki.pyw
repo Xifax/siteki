@@ -5,6 +5,7 @@ __author__ = 'Yadavito'
 #TODO: excluded items list
 #TODO: options (center on resize, always on top, etc)
 #TODO: hide to tray on close
+#TODO: parse initial data by paragraphs
 
 # internal #
 import sys, ctypes

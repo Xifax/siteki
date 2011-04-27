@@ -3,7 +3,7 @@ __author__ = 'Yadavito'
 
 __version__ = '0.0.1'
 
-_name = 'Siteki'
+_name = 'siteki'
 _company = 'nonbyte'
 _separator = '.'
 
