@@ -1,9 +1,9 @@
 # -*- coding=utf-8 -*-
 __author__ = 'Yadavito'
 
-#TODO: add optional font tweak
 #TODO: excluded items list
 #TODO: hide to tray on close
+#TODO: choose preferable fonts (A-OTF 新正楷書CBSK1 Pro CBSK1)
 
 # internal #
 import sys, ctypes

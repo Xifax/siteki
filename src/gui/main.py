@@ -9,7 +9,8 @@ from parse.verse import parse_verse, Dictionary
 from printer.printing import print_document
 from utils.const import __version__, _name, WIDTH, HEIGHT,\
                         ROOT, RES, ICONS,\
-                        PARSE, PDF, FONT, TOGGLE, EXCLUDE, OPTIONS
+                        PARSE, PDF, FONT, TOGGLE, EXCLUDE, OPTIONS,\
+                        FONT_MAX, FONT_MIN
 
 # external #
 from PyQt4.QtGui import *
@@ -39,6 +40,17 @@ class GUI(QWidget):
         self.optionsGroup = QGroupBox('Settings')
 
         # fonts contents
+        self.changeFont = QFontComboBox()
+        self.changeSize = QDial()
+        self.changeSelected = QRadioButton('Selected')
+        self.changeAll = QRadioButton('All')
+
+        self.fontLayout = QGridLayout()
+        self.fontLayout.addWidget(self.changeSelected, 0, 0, 1, 1)
+        self.fontLayout.addWidget(self.changeAll, 1, 0, 1, 1)
+        self.fontLayout.addWidget(self.changeSize, 0, 1, 2, 1)
+        self.fontLayout.addWidget(self.changeFont, 0, 2, 2, 1)
+        self.fontGroup.setLayout(self.fontLayout)
 
         # exclude contents
         self.ignoreKana = QCheckBox('Ignore standalone kana')
@@ -118,15 +130,25 @@ class GUI(QWidget):
         self.exclude.setIcon(QIcon(ROOT + RES + ICONS + EXCLUDE ))
         self.options.setIcon(QIcon(ROOT + RES + ICONS + OPTIONS ))
 
+        # font dialog
+        self.changeSize.setRange(FONT_MIN, FONT_MAX)
+        self.changeSize.setNotchesVisible(True)
+        self.changeSize.setMaximumHeight(40)
+
+        self.changeSize.setValue(16.5)
+#        self.changeSize.setTracking(False)
+        self.changeSelected.setChecked(True)
+
     def initActions(self):
+        # analysis buttons
         self.parse.clicked.connect(self.parseNPrint)
         self.topdf.clicked.connect(self.parseNPDF)
-
+        # options buttons
         self.toggle.clicked.connect(self.toggleInput)
         self.font.clicked.connect(self.toggleFont)
         self.exclude.clicked.connect(self.toggleExclude)
         self.options.clicked.connect(self.toggleOptions)
-
+        # options checkboxes
         self.onTop.clicked.connect(self.updateOptions)
         self.centerSize.clicked.connect(self.updateOptions)
         self.reSize.clicked.connect(self.updateOptions)
@@ -134,13 +156,16 @@ class GUI(QWidget):
         self.savePos.clicked.connect(self.updateOptions)
         self.saveSize.clicked.connect(self.updateOptions)
         self.toTray.clicked.connect(self.updateOptions)
-
+        # exclude checkboxes
         self.ignoreKana.clicked.connect(self.updateOptions)
         self.ignoreDuplicates.clicked.connect(self.updateOptions)
+        # font dialog
+        self.changeSize.valueChanged.connect(self.updateFontSize)
+        self.changeFont.currentFontChanged.connect(self.updateFontSize)
 
     #------------- position -------------#
     def centerWidget(self):
-        desktop = QApplication.desktop() 
+        desktop = QApplication.desktop()
         self.move((desktop.width() - self.width())/2, (desktop.height() - self.height())/2)
 
     def updateComposition(self):
@@ -218,6 +243,16 @@ class GUI(QWidget):
 
         self.config.set_ignore_kana(self.ignoreKana.isChecked())
         self.config.set_ignore_duplicates(self.ignoreDuplicates.isChecked())
+
+    # -------------- fonts ----------------#
+    def updateFontSize(self):
+        if self.changeAll.isChecked():
+            font = self.changeFont.currentFont()
+            font.setPointSizeF(self.changeSize.value())
+            self.input.setFont(font)
+        else:
+            self.input.setFont(self.changeFont.currentFont())
+            self.input.setFontPointSize(self.changeSize.value())
 
     # ----------- update events -----------#
     def showEvent(self, QShowEvent):
