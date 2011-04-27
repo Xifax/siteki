@@ -32,7 +32,12 @@ class Config:
                  'excluded' : False,
                  'options' : False,
                 },
-            )
+            ),
+             ('exclude',
+              {'kana' : True,
+               'duplicates' : True,
+              },
+             ),
         ]
 
         try:
@@ -117,3 +122,17 @@ class Config:
 
     def set_options(self, state):
         self.active_config.set('buttons', 'options', state)
+
+    # getting dictionary lookup options
+    def ignore_kana(self):
+        return self.active_config.get('exclude', 'kana')
+
+    def ignore_duplicates(self):
+        return self.active_config.get('exclude', 'duplicates')
+
+    # setting dictionary lookup options
+    def set_ignore_kana(self, state):
+        self.active_config.set('exclude', 'kana', state)
+
+    def set_ignore_duplicates(self, state):
+        self.active_config.set('exclude', 'duplicates', state)

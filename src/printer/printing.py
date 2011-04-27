@@ -19,6 +19,8 @@ def print_document(document, verse_key, pdf = False, copies=1):
     printer.setPaperSize(QPrinter.A4)
     printer.setCopyCount(copies)
 
+    printer.setPageMargins(10, 10, 10, 10, QPrinter.Millimeter)
+
 #    printer.setDuplex(QPrinter.DuplexShortSide)    #does not work properly
 
     doc = QTextDocument()

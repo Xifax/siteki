@@ -5,7 +5,7 @@ __author__ = 'Yadavito'
 
 # own #
 from options.settings import Config
-from parse.verse import parse_verse
+from parse.verse import parse_verse, Dictionary
 from printer.printing import print_document
 from utils.const import __version__, _name, WIDTH, HEIGHT,\
                         ROOT, RES, ICONS,\
@@ -21,6 +21,7 @@ class GUI(QWidget):
         super(GUI, self).__init__(parent)
 
         self.config = Config()
+        self.dictionary = Dictionary(self.config)
 
         self.layout = QGridLayout()
 
@@ -40,6 +41,13 @@ class GUI(QWidget):
         # fonts contents
 
         # exclude contents
+        self.ignoreKana = QCheckBox('Ignore standalone kana')
+        self.ignoreDuplicates = QCheckBox('Do not repeat the same words')
+
+        self.excludeLayout = QVBoxLayout()
+        self.excludeLayout.addWidget(self.ignoreKana)
+        self.excludeLayout.addWidget(self.ignoreDuplicates)
+        self.excludeGroup.setLayout(self.excludeLayout)
 
         # options contents
         self.onTop = QCheckBox('Always on top')
@@ -127,6 +135,9 @@ class GUI(QWidget):
         self.saveSize.clicked.connect(self.updateOptions)
         self.toTray.clicked.connect(self.updateOptions)
 
+        self.ignoreKana.clicked.connect(self.updateOptions)
+        self.ignoreDuplicates.clicked.connect(self.updateOptions)
+
     #------------- position -------------#
     def centerWidget(self):
         desktop = QApplication.desktop() 
@@ -144,11 +155,11 @@ class GUI(QWidget):
 
     # ------------- actions --------------#
     def parseNPrint(self):
-        if not self.input.toPlainText() == '': print_document(self.input.toHtml(), parse_verse(self.input.toPlainText()))
+        if not self.input.toPlainText() == '': print_document(self.input.toHtml(), parse_verse(self.input.toPlainText(), self.dictionary))
         else: QMessageBox.information(self, 'Nothing to parse', 'Would you kindly paste some delicious text?')
 
     def parseNPDF(self):
-         if not self.input.toPlainText() == '': print_document(self.input.toHtml(), parse_verse(self.input.toPlainText()), True)
+         if not self.input.toPlainText() == '': print_document(self.input.toHtml(), parse_verse(self.input.toPlainText(), self.dictionary), True)
          else: QMessageBox.information(self, 'Ahem', 'Well, pdf convertor needs some text too, duh!')
 
     # ------------- interface ------------#
@@ -187,6 +198,9 @@ class GUI(QWidget):
         self.saveButtons.setChecked(self.config.save_buttons())
         self.centerSize.setChecked(self.config.center())
 
+        self.ignoreKana.setChecked(self.config.ignore_kana())
+        self.ignoreDuplicates.setChecked(self.config.ignore_duplicates())
+
     def saveButtonsStates(self):
         if self.config.save_buttons():
             self.config.set_toggle(self.toggle.isChecked())
@@ -201,6 +215,9 @@ class GUI(QWidget):
         self.config.set_save_position(self.savePos.isChecked())
         self.config.set_save_size(self.saveSize.isChecked())
         self.config.set_save_buttons(self.saveButtons.isChecked())
+
+        self.config.set_ignore_kana(self.ignoreKana.isChecked())
+        self.config.set_ignore_duplicates(self.ignoreDuplicates.isChecked())
 
     # ----------- update events -----------#
     def showEvent(self, QShowEvent):
