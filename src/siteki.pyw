@@ -3,7 +3,8 @@ __author__ = 'Yadavito'
 
 #TODO: excluded items list
 #TODO: hide to tray on close
-#TODO: choose preferable fonts (A-OTF 新正楷書CBSK1 Pro CBSK1)
+#TODO: choose preferable fonts (A-OTF 新正楷書CBSK1 Pro CBSK1 / A-OTF 教科書ICA Pro )
+#TODO: add progress bar
 
 # internal #
 import sys, ctypes

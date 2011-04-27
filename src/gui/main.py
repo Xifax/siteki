@@ -35,7 +35,7 @@ class GUI(QWidget):
         self.exclude = QPushButton('E&xclude')
         self.options = QPushButton('&Options')
 
-        self.fontGroup = QGroupBox('Zoom')
+        self.fontGroup = QGroupBox('Prettify')
         self.excludeGroup = QGroupBox('Exceptions')
         self.optionsGroup = QGroupBox('Settings')
 
