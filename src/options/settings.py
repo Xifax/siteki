@@ -15,11 +15,13 @@ class Config:
                  {'top' : False,
                   'resize' : False,
                   'center' : False,
-                  'coordinates' : (0, 0)
+                  'coordinates' : (0, 0),
+                  'size' : (0, 0)
                  }
             ),
             ('states',
                 {'save_position' : False,
+                 'save_size' : False,
                  'save_buttons' : False,
                  'tray' : False
                 }
@@ -51,6 +53,9 @@ class Config:
     def get_position(self):
         return self.active_config.get('position', 'coordinates')
 
+    def get_size(self):
+        return self.active_config.get('position', 'size')
+
     # setting position options
     def set_on_top(self, state):
         self.active_config.set('position', 'top', state)
@@ -62,7 +67,10 @@ class Config:
         self.active_config.set('position', 'center', state)
 
     def set_position(self, position):
-        self.active_config.set('position', 'top', position)
+        self.active_config.set('position', 'coordinates', position)
+
+    def set_size(self, size):
+        self.active_config.set('position', 'size', size)
 
     # getting states options
     def save_position(self):
@@ -71,12 +79,18 @@ class Config:
     def save_buttons(self):
         return self.active_config.get('states', 'save_buttons')
 
+    def save_size(self):
+        return self.active_config.get('states', 'save_size')
+
     # setting states options
     def set_save_position(self, state):
         self.active_config.set('states', 'save_position', state)
 
     def set_save_buttons(self, state):
         self.active_config.set('states', 'save_buttons', state)
+
+    def set_save_size(self, state):
+        self.active_config.set('states', 'save_size', state)
 
     # getting buttons states
     def toggle(self):

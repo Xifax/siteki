@@ -46,6 +46,7 @@ class GUI(QWidget):
         self.reSize = QCheckBox('Allow automatic resize')
         self.centerSize = QCheckBox('Center on resize')
         self.savePos = QCheckBox('Save window position on exit')
+        self.saveSize = QCheckBox('Save window size on exit')
         self.saveButtons = QCheckBox('Save buttons states states on exit')
         self.toTray = QCheckBox('Send to tray on minimize')
 
@@ -54,6 +55,7 @@ class GUI(QWidget):
         self.optionsLayout.addWidget(self.reSize)
         self.optionsLayout.addWidget(self.centerSize)
         self.optionsLayout.addWidget(self.savePos)
+        self.optionsLayout.addWidget(self.saveSize)
         self.optionsLayout.addWidget(self.saveButtons)
         self.optionsLayout.addWidget(self.toTray)
         self.optionsGroup.setLayout(self.optionsLayout)
@@ -86,7 +88,8 @@ class GUI(QWidget):
         desktop = QApplication.desktop()
         self.setGeometry((desktop.width() - WIDTH)/2, (desktop.height() - HEIGHT)/2, WIDTH, HEIGHT)
 
-        if self.config.save_position(): self.move(self.config.get_position)
+        if self.config.save_position(): self.move(self.config.get_position()[0], self.config.get_position()[1])
+        if self.config.save_size(): self.setGeometry(self.x(), self.y(), self.config.get_size()[0], self.config.get_size()[1])
         if self.config.on_top(): self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
     def initComponents(self):
@@ -121,6 +124,7 @@ class GUI(QWidget):
         self.reSize.clicked.connect(self.updateOptions)
         self.saveButtons.clicked.connect(self.updateOptions)
         self.savePos.clicked.connect(self.updateOptions)
+        self.saveSize.clicked.connect(self.updateOptions)
         self.toTray.clicked.connect(self.updateOptions)
 
     #------------- position -------------#
@@ -179,6 +183,7 @@ class GUI(QWidget):
         self.onTop.setChecked(self.config.on_top())
         self.reSize.setChecked(self.config.resize())
         self.savePos.setChecked(self.config.save_position())
+        self.saveSize.setChecked(self.config.save_size())
         self.saveButtons.setChecked(self.config.save_buttons())
         self.centerSize.setChecked(self.config.center())
 
@@ -194,6 +199,7 @@ class GUI(QWidget):
         self.config.set_resize(self.reSize.isChecked())
         self.config.set_center(self.centerSize.isChecked())
         self.config.set_save_position(self.savePos.isChecked())
+        self.config.set_save_size(self.saveSize.isChecked())
         self.config.set_save_buttons(self.saveButtons.isChecked())
 
     # ----------- update events -----------#
@@ -208,3 +214,4 @@ class GUI(QWidget):
             self.updateOptions()
             self.saveButtonsStates()
         if self.config.save_position(): self.config.set_position((self.x(), self.y()))
+        if self.config.save_size(): self.config.set_size((self.width(), self.height()))

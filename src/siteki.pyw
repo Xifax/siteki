@@ -3,7 +3,6 @@ __author__ = 'Yadavito'
 
 #TODO: add optional font tweak
 #TODO: excluded items list
-#TODO: options (center on resize, always on top, etc)
 #TODO: hide to tray on close
 #TODO: parse initial data by paragraphs
 
