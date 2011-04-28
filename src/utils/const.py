@@ -30,3 +30,14 @@ OPTIONS = 'cog.png'
 # fonts
 FONT_MIN = 10
 FONT_MAX = 36
+
+PRETTY_FONTS = [u'A-OTF リュウミン Pr5 R-KL', u'A-OTF 教科書ICA Pro R', u'A-OTF 新正楷書CBSK1 Pro CBSK1']
+KEY_FONT = u'ヒラギノ明朝 Pro W3' # or may be ヒラギノ丸ゴ Pro W4
+VERSE_FONT_SIZE = 18
+KEY_FONT_SIZE = 16.5
+KEY_TRANS_SIZE = 11
+
+def get_pretty_font():
+    import random
+    return PRETTY_FONTS[random.randrange(0, len(PRETTY_FONTS))]
+    

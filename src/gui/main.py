@@ -10,7 +10,7 @@ from printer.printing import print_document
 from utils.const import __version__, _name, WIDTH, HEIGHT,\
                         ROOT, RES, ICONS,\
                         PARSE, PDF, FONT, TOGGLE, EXCLUDE, OPTIONS,\
-                        FONT_MAX, FONT_MIN
+                        FONT_MAX, FONT_MIN, VERSE_FONT_SIZE, get_pretty_font
 
 # external #
 from PyQt4.QtGui import *
@@ -42,14 +42,16 @@ class GUI(QWidget):
         # fonts contents
         self.changeFont = QFontComboBox()
         self.changeSize = QDial()
-        self.changeSelected = QRadioButton('Selected')
-        self.changeAll = QRadioButton('All')
+        self.changeSelected = QRadioButton('Zoom selected')
+        self.changeAll = QRadioButton('Zoom all')
+        self.prettify = QPushButton('Prettify')
 
         self.fontLayout = QGridLayout()
         self.fontLayout.addWidget(self.changeSelected, 0, 0, 1, 1)
         self.fontLayout.addWidget(self.changeAll, 1, 0, 1, 1)
         self.fontLayout.addWidget(self.changeSize, 0, 1, 2, 1)
-        self.fontLayout.addWidget(self.changeFont, 0, 2, 2, 1)
+        self.fontLayout.addWidget(self.changeFont, 0, 2, 1, 1)
+        self.fontLayout.addWidget(self.prettify, 1, 2, 1, 1)
         self.fontGroup.setLayout(self.fontLayout)
 
         # exclude contents
@@ -162,6 +164,7 @@ class GUI(QWidget):
         # font dialog
         self.changeSize.valueChanged.connect(self.updateFontSize)
         self.changeFont.currentFontChanged.connect(self.updateFontSize)
+        self.prettify.clicked.connect(self.prettifyFont)
 
     #------------- position -------------#
     def centerWidget(self):
@@ -253,6 +256,13 @@ class GUI(QWidget):
         else:
             self.input.setFont(self.changeFont.currentFont())
             self.input.setFontPointSize(self.changeSize.value())
+
+    def prettifyFont(self):
+        shiny = QFont(get_pretty_font(), VERSE_FONT_SIZE)
+
+        self.changeFont.setCurrentFont(QFont(shiny))
+        self.changeSize.setValue(VERSE_FONT_SIZE)
+        self.input.setFont(shiny)
 
     # ----------- update events -----------#
     def showEvent(self, QShowEvent):
