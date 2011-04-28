@@ -9,7 +9,6 @@ from utils.const import KEY_FONT, KEY_FONT_SIZE, KEY_SENSE_FONT, KEY_SENSE_SIZE,
 # external #
 from pkg_resources import resource_filename
 from cjktools.resources import auto_format
-#from cjktools.resources import kanjidic
 from cjktools import scripts
 
 class Dictionary:
@@ -17,14 +16,12 @@ class Dictionary:
         self.config = config
 
         self.edict = None
-#        self.kjd = None
         self.edict_file = resource_filename('cjktools_data', 'dict/je_edict')
         self.stats = []
         self.missed = []
 
     def load_dictionaries(self):
         if self.edict is None: self.edict = auto_format.load_dictionary(self.edict_file)
-        #if self.kjd is None: self.kjd = kanjidic.Kanjidic()
 
     def clear_statistics(self):
         self.stats = []
@@ -50,7 +47,6 @@ class Dictionary:
     @staticmethod
     def gloss(senses):
         toneDown = lambda str: str.replace('(', "<font style='color: gray;'>(").replace(')', ')</font>')
-#        senses = [toneDown(s) for s in senses ]
         return filter (lambda e: '(P)' not in e, [toneDown(s) for s in senses ])
 
 def parse_verse(verses, dictionary, ignore=[]):

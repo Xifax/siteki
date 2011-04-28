@@ -35,7 +35,7 @@ PRETTY_FONTS = [u'A-OTF リュウミン Pr5 R-KL', u'A-OTF 教科書ICA Pro R', 
 KEY_FONT = u'ヒラギノ明朝 Pro W3' # or may be ヒラギノ丸ゴ Pro W4
 KEY_SENSE_FONT = u'Calibri'
 VERSE_FONT_SIZE = 18
-KEY_FONT_SIZE = 14.5
+KEY_FONT_SIZE = 12.5
 KEY_SENSE_SIZE = 10
 
 def get_pretty_font():
@@ -44,6 +44,6 @@ def get_pretty_font():
 
 # key
 SEPARATOR_SEGMENT = '_'
-SEPARATOR_LENGTH = 70
+SEPARATOR_LENGTH = 110
 NEWLINE = '<br/>'
     

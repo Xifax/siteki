@@ -25,10 +25,6 @@ def print_document(document, verse_key, pdf = False, copies=1):
     doc = QTextDocument()
     doc.setHtml(concatenate_pages(document, verse_key))
 
-    out = open('./res', 'w')
-    out.write(doc.toPlainText())
-    out.close()
-
     dialog = QPrintPreviewDialog(printer)
     dialog.setWindowFlags(Qt.Window)
     dialog.setWindowTitle('Print preview: parse results')

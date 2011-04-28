@@ -14,7 +14,7 @@ from utils.const import __version__, _name, WIDTH, HEIGHT,\
 
 # external #
 from PyQt4.QtGui import *
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, QSize
 
 class GUI(QWidget):
 
@@ -166,6 +166,9 @@ class GUI(QWidget):
         self.changeFont.currentFontChanged.connect(self.updateFontSize)
         self.prettify.clicked.connect(self.prettifyFont)
 
+        # input
+        self.input.textChanged.connect(self.updateInputSize)
+
     #------------- position -------------#
     def centerWidget(self):
         desktop = QApplication.desktop()
@@ -191,6 +194,11 @@ class GUI(QWidget):
          else: QMessageBox.information(self, 'Ahem', 'Well, pdf convertor needs some text too, duh!')
 
     # ------------- interface ------------#
+    def updateInputSize(self):
+        contents = self.input.document().documentLayout().documentSize().toSize()
+        if contents.height() > self.input.height():
+            self.resize(QSize(self.width(), contents.height() + 90))    #NB: 90px ~ layout correction
+
     def toggleInput(self):
         if self.toggle.isChecked(): self.input.hide()
         else: self.input.show()
