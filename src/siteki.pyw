@@ -2,10 +2,6 @@
 __author__ = 'Yadavito'
 
 #TODO: excluded items list
-#TODO: hide to tray on close
-#TODO: add progress bar
-#TODO: add prettify options
-#TODO: resize text edit according to contents
 
 # internal #
 import sys, ctypes

@@ -136,3 +136,11 @@ class Config:
 
     def set_ignore_duplicates(self, state):
         self.active_config.set('exclude', 'duplicates', state)
+
+    # getting tray
+    def to_tray(self):
+        return self.active_config.get('states', 'tray')
+
+    # setting tray
+    def set_to_tray(self, state):
+        self.active_config.set('states', 'tray', state)

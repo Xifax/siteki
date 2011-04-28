@@ -8,7 +8,7 @@ from options.settings import Config
 from parse.verse import parse_verse, Dictionary
 from printer.printing import print_document
 from utils.const import __version__, _name, WIDTH, HEIGHT,\
-                        ROOT, RES, ICONS,\
+                        ROOT, RES, ICONS, LOGO,\
                         PARSE, PDF, FONT, TOGGLE, EXCLUDE, OPTIONS,\
                         FONT_MAX, FONT_MIN, VERSE_FONT_SIZE, get_pretty_font
 
@@ -72,7 +72,7 @@ class GUI(QWidget):
         self.savePos = QCheckBox('Save window position on exit')
         self.saveSize = QCheckBox('Save window size on exit')
         self.saveButtons = QCheckBox('Save buttons states states on exit')
-        self.toTray = QCheckBox('Send to tray on minimize')
+        self.toTray = QCheckBox('Send to tray on close')
 
         self.optionsLayout = QVBoxLayout()
         self.optionsLayout.addWidget(self.onTop)
@@ -103,6 +103,10 @@ class GUI(QWidget):
         self.layout.addWidget(self.options, 6, 2, 1, 2)
 
         self.setLayout(self.layout)
+
+        # tray icon
+        self.trayIcon = QSystemTrayIcon(self)
+        self.forbidClose = True
 
         self.initComposition()
         self.initComponents()
@@ -150,6 +154,10 @@ class GUI(QWidget):
         self.progress.setRange(0, 0)
         self.progress.hide()
 
+        # tray
+        self.trayIcon.setIcon(QIcon(ROOT + RES + ICONS + LOGO))
+        self.trayIcon.setToolTip(u'詩的なパーサーであります')
+
     def initActions(self):
         # analysis buttons
         self.parse.clicked.connect(self.parseNPrint)
@@ -177,6 +185,12 @@ class GUI(QWidget):
 
         # input
         self.input.textChanged.connect(self.updateInputSize)
+
+        # tray
+        self.trayIcon.activated.connect(self.restoreFromTray)
+        self.trayMenu = QMenu()
+        self.trayMenu.addAction(QAction('&Quit', self, triggered=self.quit))
+        self.trayIcon.setContextMenu(self.trayMenu)
 
     #------------- position -------------#
     def centerWidget(self):
@@ -206,7 +220,7 @@ class GUI(QWidget):
 
     def parseNPDF(self):
         if not self.input.toPlainText() == '': self.setupParserThread(True)
-        else: QMessageBox.information(self, 'Nothing to parse', 'Would you kindly paste some delicious text?')
+        else: QMessageBox.information(self, 'Ahem', 'Well, pdf convertor needs some text too, duh!')
 
     # ------------- interface ------------#
     def updateInputSize(self):
@@ -248,6 +262,7 @@ class GUI(QWidget):
         self.saveSize.setChecked(self.config.save_size())
         self.saveButtons.setChecked(self.config.save_buttons())
         self.centerSize.setChecked(self.config.center())
+        self.toTray.setChecked(self.config.to_tray())
 
         self.ignoreKana.setChecked(self.config.ignore_kana())
         self.ignoreDuplicates.setChecked(self.config.ignore_duplicates())
@@ -266,6 +281,7 @@ class GUI(QWidget):
         self.config.set_save_position(self.savePos.isChecked())
         self.config.set_save_size(self.saveSize.isChecked())
         self.config.set_save_buttons(self.saveButtons.isChecked())
+        self.config.set_to_tray(self.toTray.isChecked())
 
         self.config.set_ignore_kana(self.ignoreKana.isChecked())
         self.config.set_ignore_duplicates(self.ignoreDuplicates.isChecked())
@@ -294,13 +310,31 @@ class GUI(QWidget):
         self.updateComponents()
         self.updateComposition()
 
-    def closeEvent(self, QCloseEvent):
+    def saveAndQuit(self):
         if self.config.save_buttons():
             self.updateOptions()
             self.saveButtonsStates()
         if self.config.save_position(): self.config.set_position((self.x(), self.y()))
         if self.config.save_size(): self.config.set_size((self.width(), self.height()))
 
+    def closeEvent(self, QCloseEvent):
+        if self.config.to_tray() and self.forbidClose:
+            self.hide()
+            self.trayIcon.show()
+            QCloseEvent.ignore()
+        else:
+            self.saveAndQuit()
+            QCloseEvent.accept()
+
+    def restoreFromTray(self, reason):
+        if reason == QSystemTrayIcon.Trigger:
+            self.show()
+            self.trayIcon.hide()
+
+    def quit(self):
+        self.forbidClose = False
+        self.close()
+        
     def parsingFinished(self, success, data, pdf):
         if success:
             self.progress.hide()
