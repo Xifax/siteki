@@ -2,6 +2,7 @@
 
 # external #
 import MeCab
+from jcconv import kata2hira
 
 class MecabTool:
     @staticmethod
@@ -47,3 +48,17 @@ class MecabTool:
             result.append(w['pronunciation'])
             
         return result
+
+    @staticmethod
+    def findUsingF(f, seq):
+        for item in seq:
+            if f(item): return item
+
+    @staticmethod
+    def getWordPronunciationFromText(query, text):
+        words = MecabTool.parseToWordsFull(text)
+        answer = MecabTool.findUsingF(lambda word: query in word['word'] , words)
+        try:
+            return kata2hira(answer['pronunciation'])
+        except Exception:
+            return None

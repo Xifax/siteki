@@ -22,9 +22,12 @@ def print_document(document, verse_key, pdf = False, copies=1):
     printer.setPageMargins(10, 10, 10, 10, QPrinter.Millimeter)
 
 #    printer.setDuplex(QPrinter.DuplexShortSide)    #does not work properly
-
     doc = QTextDocument()
     doc.setHtml(concatenate_pages(document, verse_key))
+
+    out = open('./res', 'w')
+    out.write(doc.toPlainText())
+    out.close()
 
     dialog = QPrintPreviewDialog(printer)
     dialog.setWindowFlags(Qt.Window)

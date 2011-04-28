@@ -3,7 +3,8 @@ __author__ = 'Yadavito'
 
 # own #
 from mcab.mecabTool import MecabTool
-from utils.const import KEY_FONT, KEY_FONT_SIZE, KEY_TRANS_SIZE
+from utils.const import KEY_FONT, KEY_FONT_SIZE, KEY_SENSE_FONT, KEY_SENSE_SIZE,\
+                        SEPARATOR_SEGMENT, SEPARATOR_LENGTH, NEWLINE
 
 # external #
 from pkg_resources import resource_filename
@@ -42,15 +43,17 @@ class Dictionary:
                 if found.word in self.stats: found = None
                 else: self.stats.append(found.word)
         except KeyError:
-#            print 'Not found: ', query
             if query not in self.missed: self.missed.append(query)
         finally:
             return found
 
-def parse_verse(verses, dictionary, ignore=[]):
-    newline = '<br/>'
-    separator = '_'
+    @staticmethod
+    def gloss(senses):
+        toneDown = lambda str: str.replace('(', "<font style='color: gray;'>(").replace(')', ')</font>')
+#        senses = [toneDown(s) for s in senses ]
+        return filter (lambda e: '(P)' not in e, [toneDown(s) for s in senses ])
 
+def parse_verse(verses, dictionary, ignore=[]):
     dictionary.load_dictionaries()
     dictionary.clear_statistics()
 
@@ -59,11 +62,29 @@ def parse_verse(verses, dictionary, ignore=[]):
         parsed.append(MecabTool.parseToWordsFull(unicode(verse)))
     verse_key = u''
     for paragraph in parsed:
-        verse_key += newline + separator * 70 + newline
+        verse_key += NEWLINE + SEPARATOR_SEGMENT * SEPARATOR_LENGTH + NEWLINE
         for word in paragraph:
             lookup = dictionary.lookup(word['nform'])
             if lookup is not None:
-                verse_key += word['nform'] + '\t' + ', '.join(lookup.senses_by_reading().keys()) + newline
-                
+                # selecting senses by (probable) reading from source text
+                reading = MecabTool.getWordPronunciationFromText(word['word'], unicode(verses))
+                if reading is not None:
+                    try:
+                        verse_key += "<font style='font-family: " + KEY_FONT + "; font-size: " + str(KEY_FONT_SIZE) +"pt'>" + \
+                                    word['nform'] + '\t' + reading + \
+                                     "</font>\t<font style='font-family: " + KEY_SENSE_FONT + "; font-size: " + str(KEY_SENSE_SIZE) + "pt'>" + \
+                                     ', '.join( Dictionary.gloss( lookup.senses_by_reading()[reading] ) ) + '</font>' + NEWLINE
+                    except KeyError:
+                        verse_key = update_key(verse_key, word, lookup)
+                else: verse_key = update_key(verse_key, word, lookup)
+
     print 'Missed: ' + '\t'.join(dictionary.missed)
     return verse_key
+
+def update_key(key, word, lookup):
+    key += "<font style='font-family: " + KEY_FONT + "; font-size: " + str(KEY_FONT_SIZE) +"pt'>" + \
+            word['nform'] + '\t' + \
+           ', '.join(lookup.senses_by_reading().keys()) + \
+            "</font>\t<font style='font-family: " + KEY_SENSE_FONT + "; font-size: " + str(KEY_SENSE_SIZE) + "pt'>" + \
+           ', '.join(Dictionary.gloss(lookup.senses)) + '</font>' + NEWLINE
+    return key
