@@ -14,7 +14,7 @@ from utils.const import __version__, _name, WIDTH, HEIGHT,\
 
 # external #
 from PyQt4.QtGui import *
-from PyQt4.QtCore import Qt, QSize
+from PyQt4.QtCore import Qt, QSize, QThread, pyqtSignal, QString
 
 class GUI(QWidget):
 
@@ -25,6 +25,8 @@ class GUI(QWidget):
         self.dictionary = Dictionary(self.config)
 
         self.layout = QGridLayout()
+
+        self.progress = QProgressBar()
 
         self.input = QTextEdit()
         self.parse = QPushButton('Par&se')
@@ -82,21 +84,23 @@ class GUI(QWidget):
         self.optionsLayout.addWidget(self.toTray)
         self.optionsGroup.setLayout(self.optionsLayout)
 
+        # progress
+        self.layout.addWidget(self.progress, 0, 0, 1, 4)
         # buttons
-        self.layout.addWidget(self.parse, 0, 0)
-        self.layout.addWidget(self.topdf, 0, 1)
-        self.layout.addWidget(self.font, 0, 2)
-        self.layout.addWidget(self.toggle, 0, 3)
+        self.layout.addWidget(self.parse, 1, 0)
+        self.layout.addWidget(self.topdf, 1, 1)
+        self.layout.addWidget(self.font, 1, 2)
+        self.layout.addWidget(self.toggle, 1, 3)
         # font group
-        self.layout.addWidget(self.fontGroup, 1, 0, 1, 4)
+        self.layout.addWidget(self.fontGroup, 2, 0, 1, 4)
         # text edit
-        self.layout.addWidget(self.input, 2, 0, 1, 4)
+        self.layout.addWidget(self.input, 3, 0, 1, 4)
         # exclude/options groups
-        self.layout.addWidget(self.excludeGroup, 3, 0, 1, 4)
-        self.layout.addWidget(self.optionsGroup, 4, 0, 1, 4)
+        self.layout.addWidget(self.excludeGroup, 4, 0, 1, 4)
+        self.layout.addWidget(self.optionsGroup, 5, 0, 1, 4)
         # buttons again
-        self.layout.addWidget(self.exclude, 5, 0, 1, 2)
-        self.layout.addWidget(self.options, 5, 2, 1, 2)
+        self.layout.addWidget(self.exclude, 6, 0, 1, 2)
+        self.layout.addWidget(self.options, 6, 2, 1, 2)
 
         self.setLayout(self.layout)
 
@@ -138,8 +142,13 @@ class GUI(QWidget):
         self.changeSize.setMaximumHeight(40)
 
         self.changeSize.setValue(16.5)
-#        self.changeSize.setTracking(False)
         self.changeSelected.setChecked(True)
+
+        # progress
+        self.progress.setMaximumHeight(14)
+        self.progress.setAlignment(Qt.AlignCenter)
+        self.progress.setRange(0, 0)
+        self.progress.hide()
 
     def initActions(self):
         # analysis buttons
@@ -185,13 +194,19 @@ class GUI(QWidget):
         self.toggleOptions()
 
     # ------------- actions --------------#
+    def setupParserThread(self, pdf = False):
+        self.progress.show()
+        self.parser = ParserThread(self.input.toPlainText(), self.dictionary, pdf)
+        self.parser.done.connect(self.parsingFinished)
+        self.parser.start()
+
     def parseNPrint(self):
-        if not self.input.toPlainText() == '': print_document(self.input.toHtml(), parse_verse(self.input.toPlainText(), self.dictionary))
+        if not self.input.toPlainText() == '': self.setupParserThread()
         else: QMessageBox.information(self, 'Nothing to parse', 'Would you kindly paste some delicious text?')
 
     def parseNPDF(self):
-         if not self.input.toPlainText() == '': print_document(self.input.toHtml(), parse_verse(self.input.toPlainText(), self.dictionary), True)
-         else: QMessageBox.information(self, 'Ahem', 'Well, pdf convertor needs some text too, duh!')
+        if not self.input.toPlainText() == '': self.setupParserThread(True)
+        else: QMessageBox.information(self, 'Nothing to parse', 'Would you kindly paste some delicious text?')
 
     # ------------- interface ------------#
     def updateInputSize(self):
@@ -285,3 +300,21 @@ class GUI(QWidget):
             self.saveButtonsStates()
         if self.config.save_position(): self.config.set_position((self.x(), self.y()))
         if self.config.save_size(): self.config.set_size((self.width(), self.height()))
+
+    def parsingFinished(self, success, data, pdf):
+        if success:
+            self.progress.hide()
+            print_document(self.input.toHtml(), data, pdf)
+
+class ParserThread(QThread):
+    done = pyqtSignal(bool, QString, bool)
+
+    def __init__(self, inputPlain, dictionary, pdf = False, parent = None):
+        super(ParserThread, self).__init__(parent)
+        self.plain = inputPlain
+        self.dict = dictionary
+        self.pdf = pdf
+        
+    def run(self):
+        self.data = parse_verse(self.plain, self.dict)
+        self.done.emit(True, self.data, self.pdf)

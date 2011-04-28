@@ -74,7 +74,7 @@ def parse_verse(verses, dictionary, ignore=[]):
                         verse_key = update_key(verse_key, word, lookup)
                 else: verse_key = update_key(verse_key, word, lookup)
 
-    print 'Missed: ' + '\t'.join(dictionary.missed)
+#    print 'Missed: ' + '\t'.join(dictionary.missed)
     return verse_key
 
 def update_key(key, word, lookup):
