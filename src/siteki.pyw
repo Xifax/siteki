@@ -4,7 +4,7 @@ __author__ = 'Yadavito'
 #TODO: excluded items list
 
 # internal #
-import sys, ctypes
+import sys, ctypes, platform
 
 # external #
 from PyQt4.QtGui import QApplication, QIcon
@@ -24,8 +24,9 @@ def main():
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
-    id = _separator.join([_company, _name, _name, __version__.replace('.', '')])
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(id)
+    if platform.release() is '7':
+        id = _separator.join([_company, _name, _name, __version__.replace('.', '')])
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(id)
     try:
         main()
     except Exception, e:

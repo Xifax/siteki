@@ -1,6 +1,4 @@
 # -*- coding=utf-8 -*-
-from PySide.QtCore import Qt
-
 __author__ = 'Yadavito'
 
 # own #
