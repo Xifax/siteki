@@ -1,7 +1,7 @@
 # -*- coding=utf-8 -*-
 __author__ = 'Yadavito'
 
-__version__ = '0.0.6'
+__version__ = '0.1.0'
 
 _name = 'siteki'
 _company = 'nonbyte'
@@ -71,4 +71,4 @@ TIP_VISIBLE = 3000
 STATUS_CHECK_DELAY = 1000
 
 # items grid
-ROWS_MAX = 8
+#ROWS_MAX = 8

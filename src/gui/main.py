@@ -291,7 +291,8 @@ class GUI(QWidget):
     # ------------- actions --------------#
     def setupParserThread(self, pdf = False):
         self.progress.show()
-        self.parser = ParserThread(self.input.toPlainText(), self.dictionary, self.frequencyList.ignore, pdf)
+        self.parser = ParserThread(self.input.toPlainText(), self.dictionary,
+                                   self.frequencyList.ignore + self.userList.user_list, pdf)
         self.parser.done.connect(self.parsingFinished)
         self.parser.start()
 

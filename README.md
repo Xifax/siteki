@@ -18,6 +18,7 @@ Notes:
 * Pretty fonts included: *./res/fonts*
 * MeCab morphological analysis quite often turns up inappropriate parsing, be aware *(same problem with igo, apparently)*
 * Stores config data in */home/user/.siteki.ini*
+* As of yet, due to uromkan glitches there is no romaji/kana conversion *(use IME instead)*
 
 How to use:
 
