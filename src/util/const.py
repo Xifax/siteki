@@ -1,7 +1,7 @@
 # -*- coding=utf-8 -*-
 __author__ = 'Yadavito'
 
-__version__ = '0.0.4'
+__version__ = '0.0.6'
 
 _name = 'siteki'
 _company = 'nonbyte'
@@ -9,6 +9,9 @@ _separator = '.'
 
 WIDTH = 480
 HEIGHT = 600
+
+UL_WIDTH = 480
+UL_HEIGHT = 320
 
 page_breakline = '<div style="page-break-before:always">'
 page_end = '</div>'
@@ -20,6 +23,7 @@ ICONS = 'icons/'
 
 # lists
 IGNORED = 'ignore.pck'
+USER = 'user.pck'
 
 # icons
 LOGO = 'looking_glass.png'
@@ -31,6 +35,8 @@ EXCLUDE = 'excluded.png'
 OPTIONS = 'cog.png'
 QUIT = 'quit.png'
 SHOW = 'show.png'
+PLUS = 'plus.png'
+REMOVE = 'remove.png'
 
 # fonts
 FONT_MIN = 10
@@ -63,3 +69,6 @@ URL_NAME = 'http://corpus.leeds.ac.uk'
 # message
 TIP_VISIBLE = 3000
 STATUS_CHECK_DELAY = 1000
+
+# items grid
+ROWS_MAX = 8

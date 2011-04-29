@@ -23,3 +23,15 @@ class RepeatTimer(Thread):
 
     def cancel(self):
         self.finished.set()
+
+def unfillLayout(layoutName):
+    def deleteItems(layout):
+        if layout is not None:
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.deleteLater()
+                else:
+                    deleteItems(item.layout())
+    deleteItems(layoutName)

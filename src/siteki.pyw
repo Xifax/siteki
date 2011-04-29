@@ -4,6 +4,7 @@ __author__ = 'Yadavito'
 #TODO: immediately update 'on top' behaviour
 #TODO: 'missed' items notification
 #TODO: update all message to imessage
+#TODO: implement user-list
 
 # internal #
 import sys, ctypes, platform
@@ -13,7 +14,7 @@ from PyQt4.QtGui import QApplication, QIcon
 
 # own #
 from gui.main import GUI
-from utils.const import _name, __version__, _separator, _company,\
+from util.const import _name, __version__, _separator, _company,\
                         ROOT, RES, ICONS, LOGO,\
                         STYLE
 

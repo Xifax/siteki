@@ -7,7 +7,7 @@ from PyQt4.QtGui import QPrinter, QTextDocument, QPrintPreviewDialog
 from PyQt4.QtCore import Qt
 
 # own #
-from utils.const import page_breakline, page_end, ROOT
+from util.const import page_breakline, page_end, ROOT
 
 def print_document(document, verse_key, pdf = False, copies=1):
     printer = QPrinter(QPrinter.HighResolution)

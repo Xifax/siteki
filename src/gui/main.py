@@ -3,11 +3,12 @@ __author__ = 'Yadavito'
 
 # own #
 from gui.imessage import InfoMessage
+from gui.exlist import UserList
 from corpus.frequency import FrequencyList
 from options.settings import Config
 from parse.verse import parse_verse, Dictionary, sift_nonj_characters, check_scripts
 from printer.printing import print_document
-from utils.const import __version__, _name, WIDTH, HEIGHT,\
+from util.const import __version__, _name, WIDTH, HEIGHT,\
                         ROOT, RES, ICONS, LOGO,\
                         PARSE, PDF, FONT, TOGGLE, EXCLUDE, OPTIONS, SHOW, QUIT,\
                         FONT_MAX, FONT_MIN, VERSE_FONT_SIZE, get_pretty_font,\
@@ -27,6 +28,7 @@ class GUI(QWidget):
         self.dictionary = Dictionary(self.config)
         self.frequencyList = FrequencyList()
         self.message = InfoMessage(self)
+        self.userList = UserList()
 
         self.layout = QGridLayout()
 
@@ -184,7 +186,7 @@ class GUI(QWidget):
 
         # exclude
         self.byFrequency.setCheckable(True)
-        self.customExclude.setCheckable(True)
+#        self.customExclude.setCheckable(True)
 
         self.loadList.hide()
         self.updateIgnore.hide()
@@ -237,11 +239,12 @@ class GUI(QWidget):
         updateIgnore.addAction(QAction('Restore from file', self, triggered=self.loadExFromFile))
         updateIgnore.addAction(QAction('Save to file', self, triggered=self.saveExToFile))
         self.updateIgnore.setMenu(updateIgnore)
-
         self.loadList.clicked.connect(self.initCorpus)
 
+        self.customExclude.clicked.connect(self.showCustomExclude)
+
     def updateTooltips(self):
-        self.setStyleSheet('QToolTip { background-color: black; color: white; border: 1px solid white; border-radius: 2px; }')
+#        self.setStyleSheet('QToolTip { background-color: black; color: white; border: 1px solid white; border-radius: 2px; }')
 
         # buttons
         self.parse.setToolTip('Analyze text and print results')
@@ -476,7 +479,7 @@ class GUI(QWidget):
 
             self.frequencyRange.setMin(0)
             self.frequencyRange.setMax(100)
-            self.frequencyRange.setRange(70, 100)
+            self.frequencyRange.setRange(0, 80)
             self.message.showInfo(str(self.frequencyList.items) + ' items in corpus')
 #        else: QMessageBox.information(self, 'Sudden combustion', 'Could not get frequency list from ' + URL_NAME)
         else: self.message.showInfo('Could not get frequency list from ' + URL_NAME, True)
@@ -488,6 +491,9 @@ class GUI(QWidget):
     def saveExToFile(self):
         self.frequencyList.saveIgnored()
         self.message.showInfo('Saved to ' + self.frequencyList.file_path)
+
+    def showCustomExclude(self):
+        self.userList.show()
 
 ### processing threads ###
 class ParserThread(QThread):

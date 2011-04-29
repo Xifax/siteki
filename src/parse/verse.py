@@ -3,7 +3,7 @@ __author__ = 'Yadavito'
 
 # own #
 from mcab.mecabTool import MecabTool
-from utils.const import KEY_FONT, KEY_FONT_SIZE, KEY_SENSE_FONT, KEY_SENSE_SIZE,\
+from util.const import KEY_FONT, KEY_FONT_SIZE, KEY_SENSE_FONT, KEY_SENSE_SIZE,\
                         SEPARATOR_SEGMENT, SEPARATOR_LENGTH, NEWLINE
 
 # external #

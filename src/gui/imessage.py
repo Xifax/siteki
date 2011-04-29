@@ -6,8 +6,8 @@ from PyQt4.QtCore import Qt, QRect, QSize, QTimer
 from PyQt4.QtGui import *
 
 # own #
-from utils.tools import RepeatTimer
-from utils.const import TIP_VISIBLE, STATUS_CHECK_DELAY
+from util.tools import RepeatTimer
+from util.const import TIP_VISIBLE, STATUS_CHECK_DELAY
 
 class InfoMessage(QFrame):
     def __init__(self, parent=None):

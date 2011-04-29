@@ -5,7 +5,7 @@ __author__ = 'Yadavito'
 import urllib2, pickle, os
 
 # own #
-from utils.const import FREQ_LIST, FREQ_LEMMATA, ROOT, RES, IGNORED
+from util.const import FREQ_LIST, FREQ_LEMMATA, ROOT, RES, IGNORED
 
 class FrequencyList():
     def __init__(self):
