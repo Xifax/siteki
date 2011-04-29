@@ -1,8 +1,9 @@
 # -*- coding=utf-8 -*-
 __author__ = 'Yadavito'
 
-#TODO: excluded items list
 #TODO: immediately update 'on top' behaviour
+#TODO: 'missed' items notification
+#TODO: update all message to imessage
 
 # internal #
 import sys, ctypes, platform

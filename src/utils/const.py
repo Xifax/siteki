@@ -59,3 +59,7 @@ STYLE = 'plastique'
 FREQ_LIST = 'http://corpus.leeds.ac.uk/frqc/internet-jp-forms.num'
 FREQ_LEMMATA = 'http://corpus.leeds.ac.uk/frqc/internet-jp.num'
 URL_NAME = 'http://corpus.leeds.ac.uk'
+
+# message
+TIP_VISIBLE = 3000
+STATUS_CHECK_DELAY = 1000

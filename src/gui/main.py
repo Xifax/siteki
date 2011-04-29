@@ -2,6 +2,7 @@
 __author__ = 'Yadavito'
 
 # own #
+from gui.imessage import InfoMessage
 from corpus.frequency import FrequencyList
 from options.settings import Config
 from parse.verse import parse_verse, Dictionary, sift_nonj_characters, check_scripts
@@ -25,6 +26,7 @@ class GUI(QWidget):
         self.config = Config()
         self.dictionary = Dictionary(self.config)
         self.frequencyList = FrequencyList()
+        self.message = InfoMessage(self)
 
         self.layout = QGridLayout()
 
@@ -232,8 +234,8 @@ class GUI(QWidget):
         self.byFrequency.clicked.connect(self.toggleFrequencyExclude)
         updateIgnore = QMenu()
         updateIgnore.addAction(QAction('Exclude items outside of range', self, triggered=self.setIgnoreSet))
-        updateIgnore.addAction(QAction('Restore from file', self, triggered=self.frequencyList.loadIgnored))
-        updateIgnore.addAction(QAction('Save to file', self, triggered=self.frequencyList.saveIgnored))
+        updateIgnore.addAction(QAction('Restore from file', self, triggered=self.loadExFromFile))
+        updateIgnore.addAction(QAction('Save to file', self, triggered=self.saveExToFile))
         self.updateIgnore.setMenu(updateIgnore)
 
         self.loadList.clicked.connect(self.initCorpus)
@@ -277,6 +279,12 @@ class GUI(QWidget):
         self.toggleExclude()
         self.toggleOptions()
 
+    def moveMessage(self):
+        self.message.move(self.x() + (self.width() - self.message.width())/2, self.y() + self.height() + self.message.height())
+
+    def moveEvent(self, QMoveEvent):
+        self.moveMessage()
+
     # ------------- actions --------------#
     def setupParserThread(self, pdf = False):
         self.progress.show()
@@ -286,11 +294,13 @@ class GUI(QWidget):
 
     def parseNPrint(self):
         if not self.input.toPlainText() == '': self.setupParserThread()
-        else: QMessageBox.information(self, 'Nothing to parse', 'Would you kindly paste some delicious text?')
+#        else: QMessageBox.information(self, 'Nothing to parse', 'Would you kindly paste some delicious text?')
+        else: self.message.showInfo('Would you kindly paste some delicious text?', True)
 
     def parseNPDF(self):
         if not self.input.toPlainText() == '': self.setupParserThread(True)
-        else: QMessageBox.information(self, 'Ahem', 'Well, pdf convertor needs some text too, duh!')
+#        else: QMessageBox.information(self, 'Ahem', 'Well, pdf convertor needs some text too, duh!')
+        else: self.message.showInfo('Well, pdf convertor needs some text too, duh!', True)
 
     # ------------- interface ------------#
     def updateInputSize(self):
@@ -450,8 +460,10 @@ class GUI(QWidget):
 
     def setIgnoreSet(self):
         if self.frequencyList.checkIfInit():
-            self.frequencyList.getItemsInNormalRange(self.frequencyRange.getRange()[0], self.frequencyRange.getRange()[1])
-        else:  QMessageBox.information(self, 'No frequency list', 'You should initialize corpus or restore set from file')
+            self.frequencyList.getItemsExFromNormalRange(self.frequencyRange.getRange()[0], self.frequencyRange.getRange()[1])
+            self.message.showInfo(str(len(self.frequencyList.ignore)) + ' items will be ignored!')
+        else: self.message.showInfo('You should initialize corpus or restore set from file', True)
+#        else:  QMessageBox.information(self, 'No frequency list', 'You should initialize corpus or restore set from file')
 
     def updateFrequencies(self, success):
         if success:
@@ -465,7 +477,17 @@ class GUI(QWidget):
             self.frequencyRange.setMin(0)
             self.frequencyRange.setMax(100)
             self.frequencyRange.setRange(70, 100)
-        else: QMessageBox.information(self, 'Sudden combustion', 'Could not get frequency list from ' + URL_NAME)
+            self.message.showInfo(str(self.frequencyList.items) + ' items in corpus')
+#        else: QMessageBox.information(self, 'Sudden combustion', 'Could not get frequency list from ' + URL_NAME)
+        else: self.message.showInfo('Could not get frequency list from ' + URL_NAME, True)
+
+    def loadExFromFile(self):
+        self.frequencyList.loadIgnored()
+        self.message.showInfo('Restored from ' + self.frequencyList.file_path)
+
+    def saveExToFile(self):
+        self.frequencyList.saveIgnored()
+        self.message.showInfo('Saved to ' + self.frequencyList.file_path)
 
 ### processing threads ###
 class ParserThread(QThread):

@@ -50,8 +50,6 @@ class Dictionary:
         return filter (lambda e: '(P)' not in e, [toneDown(s) for s in senses ])
 
 def parse_verse(verses, dictionary, ignore=[]):
-#    print ' '.join(ignore)
-    print len(ignore)
     dictionary.load_dictionaries()
     dictionary.clear_statistics()
 

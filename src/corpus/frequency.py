@@ -14,6 +14,7 @@ class FrequencyList():
         self.data = None
         self.ignore = []
         self.processed = []
+        self.file_path = ROOT + RES + IGNORED
 
     def checkIfInit(self):
         if self.data is None: return False
@@ -35,28 +36,25 @@ class FrequencyList():
 
     def processData(self):
         for line in self.data.split('\n')[4 : -1]:
-            # (item, frequency)
-#            self.processed.append( ( line.split(' ')[-1], float(line.split(' ')[-2]) ) )
+            # (item, number) ~ normalised
             self.processed.append( ( unicode(line.split(' ')[-1], 'utf-8'), int(line.split(' ')[-3]) ) )
 
-    def getItemsListInRange(self, min, max):
+    def getItemsListExFromRange(self, min, max):
         if max > min:
-#            self.ignore = [ i[0] for i in filter (lambda e: max > e[1] > min, self.processed) ]
+            # items not in range
             self.ignore = [ i[0] for i in filter (lambda e: (e[1] < min) or (e[1] > max), self.processed) ]
             return self.ignore
 
-    def getItemsInNormalRange(self, min, max):
-#        print  len(self.getItemsListInRange( int(self.items * min/100), int(self.items * max/100) ) )
-#        return self.getItemsListInRange( self.range[1] *(float(min)/100.0), self.range[1] * (float(max)/100.0) )
-        return self.getItemsListInRange( int(self.items * min/100), int(self.items * max/100) )
+    def getItemsExFromNormalRange(self, min, max):
+        return self.getItemsListExFromRange( int(self.items * min/100), int(self.items * max/100) )
 
     def saveIgnored(self):
-        dump = open(ROOT + RES + IGNORED, 'w')
+        dump = open(self.file_path, 'w')
         pickle.dump(self.ignore, dump)
         dump.close()
 
     def loadIgnored(self):
-        if os.path.exists(ROOT + RES + IGNORED):
-            dump = open(ROOT + RES + IGNORED, 'r')
+        if os.path.exists(self.file_path):
+            dump = open(self.file_path, 'r')
             self.ignore = pickle.load(dump)
             dump.close()
