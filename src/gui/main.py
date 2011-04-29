@@ -7,7 +7,7 @@ from parse.verse import parse_verse, Dictionary
 from printer.printing import print_document
 from utils.const import __version__, _name, WIDTH, HEIGHT,\
                         ROOT, RES, ICONS, LOGO,\
-                        PARSE, PDF, FONT, TOGGLE, EXCLUDE, OPTIONS,\
+                        PARSE, PDF, FONT, TOGGLE, EXCLUDE, OPTIONS, SHOW, QUIT,\
                         FONT_MAX, FONT_MIN, VERSE_FONT_SIZE, get_pretty_font
 
 # external #
@@ -44,7 +44,7 @@ class GUI(QWidget):
         self.changeSize = QDial()
         self.changeSelected = QRadioButton('Zoom selected')
         self.changeAll = QRadioButton('Zoom all')
-        self.prettify = QPushButton('Prettify')
+        self.prettify = QPushButton('Prettify!')
 
         self.fontLayout = QGridLayout()
         self.fontLayout.addWidget(self.changeSelected, 0, 0, 1, 1)
@@ -156,6 +156,9 @@ class GUI(QWidget):
         self.trayIcon.setIcon(QIcon(ROOT + RES + ICONS + LOGO))
         self.trayIcon.setToolTip(u'詩的なパーサーであります')
 
+        # tooltips
+        self.updateTooltips()
+
     def initActions(self):
         # analysis buttons
         self.parse.clicked.connect(self.parseNPrint)
@@ -187,8 +190,23 @@ class GUI(QWidget):
         # tray
         self.trayIcon.activated.connect(self.restoreFromTray)
         self.trayMenu = QMenu()
-        self.trayMenu.addAction(QAction('&Quit', self, triggered=self.quit))
+        self.trayMenu.addAction(QAction(QIcon(ROOT + RES + ICONS + QUIT), '&Quit', self, triggered=self.quit))
+        self.trayMenu.addAction(QAction(QIcon(ROOT + RES + ICONS + SHOW), '&Show', self, triggered=self.showHide))
         self.trayIcon.setContextMenu(self.trayMenu)
+
+    def updateTooltips(self):
+        self.setStyleSheet('QToolTip { background-color: black; color: white; border: 1px solid white; border-radius: 2px; }')
+
+        # buttons
+        self.parse.setToolTip('Analyze text and print results')
+        self.topdf.setToolTip('Analyze text and save results to pdf')
+        self.font.setToolTip('Font tweaks')
+        self.toggle.setToolTip('Show/hide input field')
+        self.exclude.setToolTip('Item exclusions: options and ignore list')
+        self.options.setToolTip('General application settings')
+
+        # in groups
+        self.prettify.setToolTip("Set one of those 'shiny' fonts and change font size")
 
     #------------- position -------------#
     def centerWidget(self):
@@ -198,6 +216,7 @@ class GUI(QWidget):
     def updateComposition(self):
         if self.config.resize(): self.adjustSize()
         if self.config.center(): self.centerWidget()
+        self.updateInputSize()
 
     def updateComponents(self):
         self.toggleInput()
@@ -222,9 +241,17 @@ class GUI(QWidget):
 
     # ------------- interface ------------#
     def updateInputSize(self):
-        contents = self.input.document().documentLayout().documentSize().toSize()
-        if contents.height() > self.input.height():
-            self.resize(QSize(self.width(), contents.height() + 90))    #NB: 90px ~ layout correction
+        correction = 90
+        contents_height = self.input.document().documentLayout().documentSize().toSize().height()
+        if contents_height > self.input.height():
+            # check if new height goes over desktop limits
+            if contents_height >= QApplication.desktop().height():
+                contents_height =  QApplication.desktop().height() - correction
+
+            self.resize(QSize(self.width(), contents_height + correction))
+            # reposition dialog, in case of considerable height value
+            if self.y() + self.height() >= QApplication.desktop().height():
+                self.move(self.x(), 10)
 
     def toggleInput(self):
         if self.toggle.isChecked(): self.input.hide()
@@ -301,6 +328,8 @@ class GUI(QWidget):
         self.changeSize.setValue(VERSE_FONT_SIZE)
         self.input.setFont(shiny)
 
+        self.updateInputSize()
+
     # ----------- update events -----------#
     def showEvent(self, QShowEvent):
         self.updateCheckboxes()
@@ -332,6 +361,10 @@ class GUI(QWidget):
     def quit(self):
         self.forbidClose = False
         self.close()
+
+    def showHide(self):
+        self.show()
+        self.trayIcon.hide()
         
     def parsingFinished(self, success, data, pdf):
         if success:

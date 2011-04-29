@@ -2,6 +2,8 @@
 __author__ = 'Yadavito'
 
 #TODO: excluded items list
+#TODO: immediately update 'on top' behaviour
+#TODO: add some prettifying utilities
 
 # internal #
 import sys, ctypes, platform

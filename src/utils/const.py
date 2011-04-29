@@ -26,6 +26,8 @@ FONT = 'zoom.png'
 TOGGLE = 'toggle.png'
 EXCLUDE = 'excluded.png'
 OPTIONS = 'cog.png'
+QUIT = 'quit.png'
+SHOW = 'show.png'
 
 # fonts
 FONT_MIN = 10

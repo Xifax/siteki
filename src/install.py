@@ -47,7 +47,8 @@ if __name__ == '__main__':
     try:  __import__('PyQt4')
     except ImportError: download_and_install('http://www.riverbankcomputing.co.uk/static/Downloads/PyQt4/PyQt-Py2.6-x86-gpl-4.8.3-1.exe')
     # MeCab
-    download_and_install('http://sourceforge.net/projects/mecab/files/mecab-win32/0.98/mecab-0.98.exe/download')
+    if raw_input('Download and install MeCab? [y/n]: ') == ('y' or 'Y'):
+        download_and_install('http://sourceforge.net/projects/mecab/files/mecab-win32/0.98/mecab-0.98.exe/download')
 
     print 'Install/Update complete. Status:\n'
     print '\n'.join(installed), '\n\n(total installed: ' + str(len(installed)) + ')\n'
