@@ -23,7 +23,8 @@ class Config:
                 {'save_position' : False,
                  'save_size' : False,
                  'save_buttons' : False,
-                 'tray' : False
+                 'tray' : False,
+                 'plastique' : False
                 }
             ),
              ('buttons',
@@ -144,3 +145,11 @@ class Config:
     # setting tray
     def set_to_tray(self, state):
         self.active_config.set('states', 'tray', state)
+
+    # getting style
+    def plastique(self):
+        return self.active_config.get('states', 'plastique')
+
+    # setting style
+    def set_plastique(self, state):
+        self.active_config.set('states', 'plastique', state)

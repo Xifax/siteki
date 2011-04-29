@@ -16,7 +16,7 @@ Notes:
 * MeCab *(python module)* inside
 * Run *./src/install.py* to swiftly download all required packages, PyQt and MeCab
 * Pretty fonts included: *./res/fonts*
-* MeCab morphological analysis quite often turns up inappropriate parsing, beware *(same problem with igo, apparently)*
+* MeCab morphological analysis quite often turns up inappropriate parsing, be aware *(same problem with igo, apparently)*
 * Stores config data in */home/user/.siteki.ini*
 
 How to use:

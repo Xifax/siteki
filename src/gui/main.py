@@ -3,7 +3,7 @@ __author__ = 'Yadavito'
 
 # own #
 from options.settings import Config
-from parse.verse import parse_verse, Dictionary
+from parse.verse import parse_verse, Dictionary, sift_nonj_characters, check_scripts
 from printer.printing import print_document
 from utils.const import __version__, _name, WIDTH, HEIGHT,\
                         ROOT, RES, ICONS, LOGO,\
@@ -30,7 +30,7 @@ class GUI(QWidget):
         self.parse = QPushButton('Par&se')
         self.topdf = QPushButton('P&DF')
         self.toggle = QPushButton('&Toggle')
-        self.font = QPushButton('&Font')
+        self.font = QPushButton('&Input')
 
         self.exclude = QPushButton('E&xclude')
         self.options = QPushButton('&Options')
@@ -45,13 +45,15 @@ class GUI(QWidget):
         self.changeSelected = QRadioButton('Zoom selected')
         self.changeAll = QRadioButton('Zoom all')
         self.prettify = QPushButton('Prettify!')
+        self.normalize = QPushButton('Normalize')
 
         self.fontLayout = QGridLayout()
         self.fontLayout.addWidget(self.changeSelected, 0, 0, 1, 1)
         self.fontLayout.addWidget(self.changeAll, 1, 0, 1, 1)
         self.fontLayout.addWidget(self.changeSize, 0, 1, 2, 1)
-        self.fontLayout.addWidget(self.changeFont, 0, 2, 1, 1)
+        self.fontLayout.addWidget(self.changeFont, 0, 2, 1, 2)
         self.fontLayout.addWidget(self.prettify, 1, 2, 1, 1)
+        self.fontLayout.addWidget(self.normalize, 1, 3, 1, 1)
         self.fontGroup.setLayout(self.fontLayout)
 
         # exclude contents
@@ -69,8 +71,9 @@ class GUI(QWidget):
         self.centerSize = QCheckBox('Center on resize')
         self.savePos = QCheckBox('Save window position on exit')
         self.saveSize = QCheckBox('Save window size on exit')
-        self.saveButtons = QCheckBox('Save buttons states states on exit')
+        self.saveButtons = QCheckBox('Save buttons states on exit')
         self.toTray = QCheckBox('Send to tray on close')
+        self.plastique = QCheckBox("Use 'plastique' style")
 
         self.optionsLayout = QVBoxLayout()
         self.optionsLayout.addWidget(self.onTop)
@@ -80,6 +83,7 @@ class GUI(QWidget):
         self.optionsLayout.addWidget(self.saveSize)
         self.optionsLayout.addWidget(self.saveButtons)
         self.optionsLayout.addWidget(self.toTray)
+        self.optionsLayout.addWidget(self.plastique)
         self.optionsGroup.setLayout(self.optionsLayout)
 
         # progress
@@ -176,6 +180,7 @@ class GUI(QWidget):
         self.savePos.clicked.connect(self.updateOptions)
         self.saveSize.clicked.connect(self.updateOptions)
         self.toTray.clicked.connect(self.updateOptions)
+        self.plastique.clicked.connect(self.updateOptions)
         # exclude checkboxes
         self.ignoreKana.clicked.connect(self.updateOptions)
         self.ignoreDuplicates.clicked.connect(self.updateOptions)
@@ -183,6 +188,7 @@ class GUI(QWidget):
         self.changeSize.valueChanged.connect(self.updateFontSize)
         self.changeFont.currentFontChanged.connect(self.updateFontSize)
         self.prettify.clicked.connect(self.prettifyFont)
+        self.normalize.clicked.connect(self.normalizeInput)
 
         # input
         self.input.textChanged.connect(self.updateInputSize)
@@ -207,6 +213,7 @@ class GUI(QWidget):
 
         # in groups
         self.prettify.setToolTip("Set one of those 'shiny' fonts and change font size")
+        self.normalize.setToolTip('Remove non-japanese characters')
 
     #------------- position -------------#
     def centerWidget(self):
@@ -246,7 +253,7 @@ class GUI(QWidget):
         if contents_height > self.input.height():
             # check if new height goes over desktop limits
             if contents_height >= QApplication.desktop().height():
-                contents_height =  QApplication.desktop().height() - correction
+                contents_height = QApplication.desktop().height() - correction*2
 
             self.resize(QSize(self.width(), contents_height + correction))
             # reposition dialog, in case of considerable height value
@@ -288,6 +295,7 @@ class GUI(QWidget):
         self.saveButtons.setChecked(self.config.save_buttons())
         self.centerSize.setChecked(self.config.center())
         self.toTray.setChecked(self.config.to_tray())
+        self.plastique.setChecked(self.config.plastique())
 
         self.ignoreKana.setChecked(self.config.ignore_kana())
         self.ignoreDuplicates.setChecked(self.config.ignore_duplicates())
@@ -307,6 +315,7 @@ class GUI(QWidget):
         self.config.set_save_size(self.saveSize.isChecked())
         self.config.set_save_buttons(self.saveButtons.isChecked())
         self.config.set_to_tray(self.toTray.isChecked())
+        self.config.set_plastique(self.plastique.isChecked())
 
         self.config.set_ignore_kana(self.ignoreKana.isChecked())
         self.config.set_ignore_duplicates(self.ignoreDuplicates.isChecked())
@@ -329,6 +338,11 @@ class GUI(QWidget):
         self.input.setFont(shiny)
 
         self.updateInputSize()
+
+    # ------------- input data --------------#
+    def normalizeInput(self):
+        while check_scripts(self.input.toPlainText()):
+            self.input.setHtml(sift_nonj_characters(unicode(self.input.toHtml()), unicode(self.input.toPlainText())))
 
     # ----------- update events -----------#
     def showEvent(self, QShowEvent):

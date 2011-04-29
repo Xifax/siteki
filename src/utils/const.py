@@ -48,4 +48,6 @@ def get_pretty_font():
 SEPARATOR_SEGMENT = '_'
 SEPARATOR_LENGTH = 110
 NEWLINE = '<br/>'
-    
+
+# style
+STYLE = 'plastique'

@@ -84,3 +84,16 @@ def update_key(key, word, lookup):
             "</font>\t<font style='font-family: " + KEY_SENSE_FONT + "; font-size: " + str(KEY_SENSE_SIZE) + "pt'>" + \
            ', '.join(Dictionary.gloss(lookup.senses)) + '</font>' + NEWLINE
     return key
+
+def sift_nonj_characters(data, plain):
+    parts = scripts.script_boundaries(plain)
+    for part in parts:
+        if scripts.script_type(part) is scripts.Script.Ascii:
+            data = data.replace(part, '')
+    return data
+
+def check_scripts(plain):
+    return scripts.Script.Ascii in scripts.script_types(plain)
+
+
+

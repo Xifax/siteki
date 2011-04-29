@@ -3,7 +3,6 @@ __author__ = 'Yadavito'
 
 #TODO: excluded items list
 #TODO: immediately update 'on top' behaviour
-#TODO: add some prettifying utilities
 
 # internal #
 import sys, ctypes, platform
@@ -14,13 +13,15 @@ from PyQt4.QtGui import QApplication, QIcon
 # own #
 from gui.main import GUI
 from utils.const import _name, __version__, _separator, _company,\
-                        ROOT, RES, ICONS, LOGO
+                        ROOT, RES, ICONS, LOGO,\
+                        STYLE
 
 def main():
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(ROOT + RES + ICONS + LOGO))
 
     gui = GUI()
+    if gui.config.plastique(): app.setStyle(STYLE)
     gui.show()
 
     sys.exit(app.exec_())
