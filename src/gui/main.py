@@ -2,25 +2,29 @@
 __author__ = 'Yadavito'
 
 # own #
+from corpus.frequency import FrequencyList
 from options.settings import Config
 from parse.verse import parse_verse, Dictionary, sift_nonj_characters, check_scripts
 from printer.printing import print_document
 from utils.const import __version__, _name, WIDTH, HEIGHT,\
                         ROOT, RES, ICONS, LOGO,\
                         PARSE, PDF, FONT, TOGGLE, EXCLUDE, OPTIONS, SHOW, QUIT,\
-                        FONT_MAX, FONT_MIN, VERSE_FONT_SIZE, get_pretty_font
-
+                        FONT_MAX, FONT_MIN, VERSE_FONT_SIZE, get_pretty_font,\
+                        URL_NAME
 # external #
 from PyQt4.QtGui import *
 from PyQt4.QtCore import Qt, QSize, QThread, pyqtSignal, QString
+from gui.qrangeslider import QRangeSlider
 
 class GUI(QWidget):
 
     def __init__(self, parent=None):
         super(GUI, self).__init__(parent)
 
+        # internal modules
         self.config = Config()
         self.dictionary = Dictionary(self.config)
+        self.frequencyList = FrequencyList()
 
         self.layout = QGridLayout()
 
@@ -59,11 +63,24 @@ class GUI(QWidget):
         # exclude contents
         self.ignoreKana = QCheckBox('Ignore standalone kana')
         self.ignoreDuplicates = QCheckBox('Do not repeat the same words')
+        self.byFrequency = QPushButton('By frequency')
+        self.customExclude = QPushButton('User list')
 
-        self.excludeLayout = QVBoxLayout()
-        self.excludeLayout.addWidget(self.ignoreKana)
-        self.excludeLayout.addWidget(self.ignoreDuplicates)
+        self.frequencyRange = QRangeSlider()
+        self.loadList = QPushButton('From corpus')
+        self.updateIgnore = QPushButton('Update')
+
+        self.excludeLayout = QGridLayout()
+        self.excludeLayout.addWidget(self.loadList, 0, 0)
+        self.excludeLayout.addWidget(self.updateIgnore, 0, 1)
+        self.excludeLayout.addWidget(self.frequencyRange, 1, 0, 1, 2)
+        self.excludeLayout.addWidget(self.byFrequency, 2, 0)
+        self.excludeLayout.addWidget(self.customExclude, 2, 1)
+        self.excludeLayout.addWidget(self.ignoreKana, 3, 0, 1, 2)
+        self.excludeLayout.addWidget(self.ignoreDuplicates, 4, 0, 1, 2)
         self.excludeGroup.setLayout(self.excludeLayout)
+
+        self.corpusUpdated = False
 
         # options contents
         self.onTop = QCheckBox('Always on top')
@@ -163,6 +180,17 @@ class GUI(QWidget):
         # tooltips
         self.updateTooltips()
 
+        # exclude
+        self.byFrequency.setCheckable(True)
+        self.customExclude.setCheckable(True)
+
+        self.loadList.hide()
+        self.updateIgnore.hide()
+        self.frequencyRange.hide()
+
+        self.frequencyRange.setBackgroundStyle('background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #111, stop:1 #333);')
+        self.frequencyRange.handle.setStyleSheet('background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #145, stop:1 #393);')
+
     def initActions(self):
         # analysis buttons
         self.parse.clicked.connect(self.parseNPrint)
@@ -200,6 +228,16 @@ class GUI(QWidget):
         self.trayMenu.addAction(QAction(QIcon(ROOT + RES + ICONS + SHOW), '&Show', self, triggered=self.showHide))
         self.trayIcon.setContextMenu(self.trayMenu)
 
+        # exclude
+        self.byFrequency.clicked.connect(self.toggleFrequencyExclude)
+        updateIgnore = QMenu()
+        updateIgnore.addAction(QAction('Exclude items outside of range', self, triggered=self.setIgnoreSet))
+        updateIgnore.addAction(QAction('Restore from file', self, triggered=self.frequencyList.loadIgnored))
+        updateIgnore.addAction(QAction('Save to file', self, triggered=self.frequencyList.saveIgnored))
+        self.updateIgnore.setMenu(updateIgnore)
+
+        self.loadList.clicked.connect(self.initCorpus)
+
     def updateTooltips(self):
         self.setStyleSheet('QToolTip { background-color: black; color: white; border: 1px solid white; border-radius: 2px; }')
 
@@ -214,6 +252,14 @@ class GUI(QWidget):
         # in groups
         self.prettify.setToolTip("Set one of those 'shiny' fonts and change font size")
         self.normalize.setToolTip('Remove non-japanese characters')
+
+        # input
+        self.input.setToolTip("I-It's not like you should enter something!")
+
+        # exclude
+        self.frequencyRange.setToolTip('Normalised frequencies')
+        self.loadList.setToolTip('Get frequencies from ' + URL_NAME)
+        self.updateIgnore.setToolTip('Update active set of excluded items')
 
     #------------- position -------------#
     def centerWidget(self):
@@ -234,7 +280,7 @@ class GUI(QWidget):
     # ------------- actions --------------#
     def setupParserThread(self, pdf = False):
         self.progress.show()
-        self.parser = ParserThread(self.input.toPlainText(), self.dictionary, pdf)
+        self.parser = ParserThread(self.input.toPlainText(), self.dictionary, self.frequencyList.ignore, pdf)
         self.parser.done.connect(self.parsingFinished)
         self.parser.start()
 
@@ -320,6 +366,16 @@ class GUI(QWidget):
         self.config.set_ignore_kana(self.ignoreKana.isChecked())
         self.config.set_ignore_duplicates(self.ignoreDuplicates.isChecked())
 
+    def toggleFrequencyExclude(self):
+        if self.byFrequency.isChecked():
+            self.loadList.show()
+            self.updateIgnore.show()
+            if self.corpusUpdated: self.frequencyRange.show()
+        else:
+            self.loadList.hide()
+            self.updateIgnore.hide()
+            self.frequencyRange.hide()
+
     # -------------- fonts ----------------#
     def updateFontSize(self):
         if self.changeAll.isChecked():
@@ -344,7 +400,7 @@ class GUI(QWidget):
         while check_scripts(self.input.toPlainText()):
             self.input.setHtml(sift_nonj_characters(unicode(self.input.toHtml()), unicode(self.input.toPlainText())))
 
-    # ----------- update events -----------#
+    # ----------- update events -------------#
     def showEvent(self, QShowEvent):
         self.updateCheckboxes()
         self.updateButtonStates()
@@ -385,15 +441,58 @@ class GUI(QWidget):
             self.progress.hide()
             print_document(self.input.toHtml(), data, pdf)
 
+    # -------------- exclude ----------------#
+    def initCorpus(self):
+        self.progress.show()
+        self.corpusThread = CorpusThread(self.frequencyList)
+        self.corpusThread.done.connect(self.updateFrequencies)
+        self.corpusThread.start()
+
+    def setIgnoreSet(self):
+        if self.frequencyList.checkIfInit():
+            self.frequencyList.getItemsInNormalRange(self.frequencyRange.getRange()[0], self.frequencyRange.getRange()[1])
+        else:  QMessageBox.information(self, 'No frequency list', 'You should initialize corpus or restore set from file')
+
+    def updateFrequencies(self, success):
+        if success:
+            self.corpusUpdated = True
+            self.progress.hide()
+
+            self.frequencyRange.show()
+            self.frequencyRange.setToolTip('Normalised distribution (actual min: ' + str(self.frequencyList.range[0]) + ' max: ' +\
+            str(self.frequencyList.range[1]) + ')')
+
+            self.frequencyRange.setMin(0)
+            self.frequencyRange.setMax(100)
+            self.frequencyRange.setRange(70, 100)
+        else: QMessageBox.information(self, 'Sudden combustion', 'Could not get frequency list from ' + URL_NAME)
+
+### processing threads ###
 class ParserThread(QThread):
     done = pyqtSignal(bool, QString, bool)
 
-    def __init__(self, inputPlain, dictionary, pdf = False, parent = None):
+    def __init__(self, inputPlain, dictionary, ignore, pdf = False, parent = None):
         super(ParserThread, self).__init__(parent)
+        self.ignore = ignore
         self.plain = inputPlain
         self.dict = dictionary
         self.pdf = pdf
         
     def run(self):
-        self.data = parse_verse(self.plain, self.dict)
+        self.data = parse_verse(self.plain, self.dict, self.ignore)
         self.done.emit(True, self.data, self.pdf)
+
+class CorpusThread(QThread):
+    done = pyqtSignal(bool)
+    def __init__(self, fList, parent = None):
+        super(CorpusThread, self).__init__(parent)
+        self.fList = fList
+
+    def run(self):
+        if not self.fList.checkIfInit():
+            if self.fList.getFrequencyRange():
+                self.fList.processData()
+                success = True
+        success = True
+        self.done.emit(success)
+

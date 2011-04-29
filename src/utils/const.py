@@ -18,6 +18,9 @@ ROOT = '../'
 RES = 'res/'
 ICONS = 'icons/'
 
+# lists
+IGNORED = 'ignore.pck'
+
 # icons
 LOGO = 'looking_glass.png'
 PARSE = 'print.png'
@@ -51,3 +54,8 @@ NEWLINE = '<br/>'
 
 # style
 STYLE = 'plastique'
+
+# corpus
+FREQ_LIST = 'http://corpus.leeds.ac.uk/frqc/internet-jp-forms.num'
+FREQ_LEMMATA = 'http://corpus.leeds.ac.uk/frqc/internet-jp.num'
+URL_NAME = 'http://corpus.leeds.ac.uk'

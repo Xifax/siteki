@@ -50,6 +50,8 @@ class Dictionary:
         return filter (lambda e: '(P)' not in e, [toneDown(s) for s in senses ])
 
 def parse_verse(verses, dictionary, ignore=[]):
+#    print ' '.join(ignore)
+    print len(ignore)
     dictionary.load_dictionaries()
     dictionary.clear_statistics()
 
@@ -60,19 +62,20 @@ def parse_verse(verses, dictionary, ignore=[]):
     for paragraph in parsed:
         verse_key += NEWLINE + SEPARATOR_SEGMENT * SEPARATOR_LENGTH + NEWLINE
         for word in paragraph:
-            lookup = dictionary.lookup(word['nform'])
-            if lookup is not None:
-                # selecting senses by (probable) reading from source text
-                reading = MecabTool.getWordPronunciationFromText(word['word'], unicode(verses))
-                if reading is not None:
-                    try:
-                        verse_key += "<font style='font-family: " + KEY_FONT + "; font-size: " + str(KEY_FONT_SIZE) +"pt'>" + \
-                                    word['nform'] + '\t' + reading + \
-                                     "</font>\t<font style='font-family: " + KEY_SENSE_FONT + "; font-size: " + str(KEY_SENSE_SIZE) + "pt'>" + \
-                                     ', '.join( Dictionary.gloss( lookup.senses_by_reading()[reading] ) ) + '</font>' + NEWLINE
-                    except KeyError:
-                        verse_key = update_key(verse_key, word, lookup)
-                else: verse_key = update_key(verse_key, word, lookup)
+            if word['nform'] not in ignore:
+                lookup = dictionary.lookup(word['nform'])
+                if lookup is not None:
+                    # selecting senses by (probable) reading from source text
+                    reading = MecabTool.getWordPronunciationFromText(word['word'], unicode(verses))
+                    if reading is not None:
+                        try:
+                            verse_key += "<font style='font-family: " + KEY_FONT + "; font-size: " + str(KEY_FONT_SIZE) +"pt'>" + \
+                                        word['nform'] + '\t' + reading + \
+                                         "</font>\t<font style='font-family: " + KEY_SENSE_FONT + "; font-size: " + str(KEY_SENSE_SIZE) + "pt'>" + \
+                                         ', '.join( Dictionary.gloss( lookup.senses_by_reading()[reading] ) ) + '</font>' + NEWLINE
+                        except KeyError:
+                            verse_key = update_key(verse_key, word, lookup)
+                    else: verse_key = update_key(verse_key, word, lookup)
 
 #    print 'Missed: ' + '\t'.join(dictionary.missed)
     return verse_key
