@@ -1,11 +1,6 @@
 # -*- coding=utf-8 -*-
 __author__ = 'Yadavito'
 
-#TODO: immediately update 'on top' behaviour
-#TODO: 'missed' items notification
-#TODO: update all message to imessage
-#TODO: implement user-list
-
 # internal #
 import sys, ctypes, platform
 

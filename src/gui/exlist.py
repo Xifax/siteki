@@ -11,7 +11,7 @@ from cjktools import scripts
 
 # own #
 from util.const import UL_WIDTH, UL_HEIGHT, ROOT, RES, USER, ICONS,\
-                        PLUS, REMOVE, VERSE_FONT_SIZE, KEY_FONT_SIZE, get_pretty_font
+                        PLUS, CLEAR, REMOVE, PEN, VERSE_FONT_SIZE, KEY_FONT_SIZE, get_pretty_font
 
 class UserList(QWidget):
     def __init__(self, parent=None):
@@ -20,6 +20,8 @@ class UserList(QWidget):
         self.file_path = ROOT + RES + USER
 
         self.add = QPushButton()
+        self.clear = QPushButton()
+        self.enter = QPushButton()
         self.input = QLineEdit()
 
         self.list = QListWidget()
@@ -33,9 +35,11 @@ class UserList(QWidget):
         self.layout = QGridLayout()
         self.layout.addWidget(self.add, 0, 0)
         self.layout.addWidget(self.input, 0, 1)
-        self.layout.addWidget(self.list, 1, 0, 1, 2)
-        self.layout.addWidget(self.search, 2, 0, 1, 2)
-        self.layout.addWidget(self.status, 3, 0, 1, 2)
+        self.layout.addWidget(self.enter, 0, 2)
+        self.layout.addWidget(self.clear, 0, 3)
+        self.layout.addWidget(self.list, 1, 0, 1, 4)
+        self.layout.addWidget(self.search, 2, 0, 1, 4)
+        self.layout.addWidget(self.status, 3, 0, 1, 4)
 
         self.setLayout(self.layout)
 
@@ -51,8 +55,16 @@ class UserList(QWidget):
     def initComponents(self):
         self.add.setIcon(QIcon(ROOT + RES + ICONS + PLUS))
         self.add.setMinimumHeight(40)
+        self.add.setToolTip('Add item to list')
         self.input.setFont(QFont(get_pretty_font(), VERSE_FONT_SIZE))
-        self.input.setToolTip('Japanese characters only')
+        self.input.setToolTip('Japanese characters only (press enter to add)')
+        self.clear.setIcon(QIcon(ROOT + RES + ICONS + CLEAR))
+        self.clear.setMinimumHeight(40)
+        self.clear.setToolTip('Clear list')
+        self.enter.setCheckable(True)
+        self.enter.setIcon(QIcon(ROOT + RES + ICONS + PEN))
+        self.enter.setMinimumHeight(40)
+        self.enter.setToolTip('Clear input on enter')
 
         self.items_font = QFont(get_pretty_font(), VERSE_FONT_SIZE)
         self.list.setSelectionMode(QAbstractItemView.ExtendedSelection)
@@ -65,6 +77,8 @@ class UserList(QWidget):
 
     def initActions(self):
         self.add.clicked.connect(self.addItem)
+        self.clear.clicked.connect(self.clearList)
+        self.enter.clicked.connect(self.clearOnEnter)
         self.input.returnPressed.connect(self.addItem)
 
         self.list.itemDoubleClicked.connect(self.removeFromList)
@@ -88,6 +102,11 @@ class UserList(QWidget):
         self.list.clear()
 
     # ------------ actions -------------- #
+    def clearList(self):
+        del self.user_list[:]
+        self.list.clear()
+        self.updateItemsCount()
+
     def addItem(self):
         if unicode(self.input.text()).strip() != '':
             if scripts.Script.Ascii in scripts.script_types(self.input.text()):
@@ -96,6 +115,7 @@ class UserList(QWidget):
                 if not self.input.text() in self.user_list:
                     self.user_list.append(self.input.text())
                     self.appendToList(self.input.text())
+        if self.enter.isChecked(): self.input.clear()
 
     def appendToList(self, item):
         list_item = QListWidgetItem(item)
@@ -103,16 +123,18 @@ class UserList(QWidget):
         self.list.addItem(list_item)
 
         self.list.sortItems(Qt.AscendingOrder)
-        self.status.setText('<b>' + str(len(self.user_list)) + '</b> items total')
+        self.updateItemsCount()
 
     def removeFromList(self, item):
         self.user_list.remove(item.text())
         self.list.takeItem(self.list.indexFromItem(item).row())
+        self.updateItemsCount()
 
     def removeItems(self):
         for item in self.list.selectedItems():
-            self.list.remove(item.text())
+            self.user_list.remove(item.text())
             self.list.takeItem(self.list.indexFromItem(item).row())
+            self.updateItemsCount()
 
     def clearSearch(self):
         self.search.clear()
@@ -126,5 +148,12 @@ class UserList(QWidget):
             if len(match) > 0: self.list.scrollToItem(match[0])
             self.status.setText('<b>' + str(len(match)) + '</b> items found')
         else:
-            self.status.setText('<b>' + str(len(self.user_list)) + '</b> items total')
+            self.updateItemsCount()
+
+    def updateItemsCount(self):
+        self.status.setText('<b>' + str(len(self.user_list)) + '</b> items total')
+
+    def clearOnEnter(self):
+        if self.enter.isChecked(): self.enter.setToolTip('Do not clear input on enter')
+        else: self.enter.setToolTip('Clear input on enter')
 

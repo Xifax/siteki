@@ -15,14 +15,17 @@ Notes:
 * Makes use of cjktools and cjktools-data packages
 * MeCab *(python module)* inside
 * Run *./src/install.py* to swiftly download all required packages, PyQt and MeCab
-* Pretty fonts included: *./res/fonts*
+* Pretty Japanese fonts included: *./res/fonts*
 * MeCab morphological analysis quite often turns up inappropriate parsing, be aware *(same problem with igo, apparently)*
 * Stores config data in */home/user/.siteki.ini*
 * As of yet, due to uromkan glitches there is no romaji/kana conversion *(use IME instead)*
+* Corpus frequencies are normalised by sequential numbers, not by their actual frequency values
 
 How to use:
 
 1. launch
-2. paste some (coherent) Japanese text from txt or html *(e.g. /res/data/sample)*
-3. click parse/pdf *(first call may take some time to load edict dictionary)*
-4. print resulting document or save to pdf file
+* paste some (coherent) Japanese text from txt or html *(e.g. /res/data/sample)*
+ - adjust font family/size as you see fit
+ - specify excluded items manually or using frequency range
+* click parse/pdf *(first call may take some time to load edict dictionary)*
+* print resulting document or save it to pdf file

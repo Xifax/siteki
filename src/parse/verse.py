@@ -72,10 +72,11 @@ def parse_verse(verses, dictionary, ignore=[]):
                                          "</font>\t<font style='font-family: " + KEY_SENSE_FONT + "; font-size: " + str(KEY_SENSE_SIZE) + "pt'>" + \
                                          ', '.join( Dictionary.gloss( lookup.senses_by_reading()[reading] ) ) + '</font>' + NEWLINE
                         except KeyError:
+                            # selecting senses 'blindly'
                             verse_key = update_key(verse_key, word, lookup)
                     else: verse_key = update_key(verse_key, word, lookup)
 
-#    print 'Missed: ' + '\t'.join(dictionary.missed)
+#    verse_key += NEWLINE + '\t'.join(dictionary.missed)
     return verse_key
 
 def update_key(key, word, lookup):

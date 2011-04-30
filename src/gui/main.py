@@ -186,7 +186,6 @@ class GUI(QWidget):
 
         # exclude
         self.byFrequency.setCheckable(True)
-#        self.customExclude.setCheckable(True)
 
         self.loadList.hide()
         self.updateIgnore.hide()
@@ -194,6 +193,9 @@ class GUI(QWidget):
 
         self.frequencyRange.setBackgroundStyle('background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #111, stop:1 #333);')
         self.frequencyRange.handle.setStyleSheet('background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #145, stop:1 #393);')
+
+        # inactive
+        self.onTop.setEnabled(False)
 
     def initActions(self):
         # analysis buttons
@@ -259,7 +261,7 @@ class GUI(QWidget):
         self.normalize.setToolTip('Remove non-japanese characters')
 
         # input
-        self.input.setToolTip("I-It's not like you should enter something!")
+        self.input.setToolTip("I-It's not like you should paste something!")
 
         # exclude
         self.frequencyRange.setToolTip('Normalised frequencies')
@@ -288,6 +290,9 @@ class GUI(QWidget):
     def moveEvent(self, QMoveEvent):
         self.moveMessage()
 
+    def resizeEvent(self, QResizeEvent):
+        self.moveMessage()
+
     # ------------- actions --------------#
     def setupParserThread(self, pdf = False):
         self.progress.show()
@@ -298,12 +303,10 @@ class GUI(QWidget):
 
     def parseNPrint(self):
         if not self.input.toPlainText() == '': self.setupParserThread()
-#        else: QMessageBox.information(self, 'Nothing to parse', 'Would you kindly paste some delicious text?')
         else: self.message.showInfo('Would you kindly paste some delicious text?', True)
 
     def parseNPDF(self):
         if not self.input.toPlainText() == '': self.setupParserThread(True)
-#        else: QMessageBox.information(self, 'Ahem', 'Well, pdf convertor needs some text too, duh!')
         else: self.message.showInfo('Well, pdf convertor needs some text too, duh!', True)
 
     # ------------- interface ------------#
@@ -467,7 +470,6 @@ class GUI(QWidget):
             self.frequencyList.getItemsExFromNormalRange(self.frequencyRange.getRange()[0], self.frequencyRange.getRange()[1])
             self.message.showInfo(str(len(self.frequencyList.ignore)) + ' items will be ignored!')
         else: self.message.showInfo('You should initialize corpus or restore set from file', True)
-#        else:  QMessageBox.information(self, 'No frequency list', 'You should initialize corpus or restore set from file')
 
     def updateFrequencies(self, success):
         if success:
@@ -482,7 +484,6 @@ class GUI(QWidget):
             self.frequencyRange.setMax(100)
             self.frequencyRange.setRange(0, 80)
             self.message.showInfo(str(self.frequencyList.items) + ' items in corpus')
-#        else: QMessageBox.information(self, 'Sudden combustion', 'Could not get frequency list from ' + URL_NAME)
         else: self.message.showInfo('Could not get frequency list from ' + URL_NAME, True)
 
     def loadExFromFile(self):
@@ -513,15 +514,16 @@ class ParserThread(QThread):
 
 class CorpusThread(QThread):
     done = pyqtSignal(bool)
+    
     def __init__(self, fList, parent = None):
         super(CorpusThread, self).__init__(parent)
         self.fList = fList
 
     def run(self):
+        success = True
         if not self.fList.checkIfInit():
             if self.fList.getFrequencyRange():
                 self.fList.processData()
-                success = True
-        success = True
+            else: success = False
         self.done.emit(success)
 
