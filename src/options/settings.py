@@ -24,7 +24,8 @@ class Config:
                  'save_size' : False,
                  'save_buttons' : False,
                  'tray' : False,
-                 'plastique' : False
+                 'plastique' : False,
+                 'page' : False,
                 }
             ),
              ('buttons',
@@ -153,3 +154,11 @@ class Config:
     # setting style
     def set_plastique(self, state):
         self.active_config.set('states', 'plastique', state)
+
+    # getting page skip
+    def skip_page(self):
+        return self.active_config.get('states', 'page')
+
+    # setting page skip
+    def set_skip_page(self, state):
+        self.active_config.set('states', 'page', state)

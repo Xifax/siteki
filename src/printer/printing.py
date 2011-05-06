@@ -9,7 +9,7 @@ from PyQt4.QtCore import Qt
 # own #
 from util.const import page_breakline, page_end, ROOT
 
-def print_document(document, verse_key, pdf = False, copies=1):
+def print_document(document, verse_key, pdf = False, copies=1, skip=False):
     printer = QPrinter(QPrinter.HighResolution)
 
     if not pdf: printer.setOutputFormat(QPrinter.NativeFormat)
@@ -22,7 +22,7 @@ def print_document(document, verse_key, pdf = False, copies=1):
     printer.setPageMargins(10, 10, 10, 10, QPrinter.Millimeter)
 
     doc = QTextDocument()
-    doc.setHtml(concatenate_pages(document, verse_key))
+    doc.setHtml(concatenate_pages(document, verse_key, skip))
 
     dialog = QPrintPreviewDialog(printer)
     dialog.setWindowFlags(Qt.Window)
@@ -33,5 +33,6 @@ def print_document(document, verse_key, pdf = False, copies=1):
     dialog.paintRequested.connect(preview)
     dialog.exec_()
 
-def concatenate_pages(original, key):
-    return  original + page_breakline + key + page_end
+def concatenate_pages(original, key, skip):
+    if skip: return original + page_breakline + ' ' + page_end + page_breakline + key + page_end
+    else: return  original + page_breakline + key + page_end

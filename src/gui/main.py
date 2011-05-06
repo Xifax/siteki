@@ -95,6 +95,7 @@ class GUI(QWidget):
         self.saveButtons = QCheckBox('Save buttons states on exit')
         self.toTray = QCheckBox('Send to tray on close')
         self.plastique = QCheckBox("Use 'plastique' style")
+        self.nextPage = QCheckBox('Skip page after main text')
 
         self.optionsLayout = QVBoxLayout()
         self.optionsLayout.addWidget(self.onTop)
@@ -105,6 +106,7 @@ class GUI(QWidget):
         self.optionsLayout.addWidget(self.saveButtons)
         self.optionsLayout.addWidget(self.toTray)
         self.optionsLayout.addWidget(self.plastique)
+        self.optionsLayout.addWidget(self.nextPage)
         self.optionsGroup.setLayout(self.optionsLayout)
 
         # progress
@@ -215,6 +217,7 @@ class GUI(QWidget):
         self.saveSize.clicked.connect(self.updateOptions)
         self.toTray.clicked.connect(self.updateOptions)
         self.plastique.clicked.connect(self.updateOptions)
+        self.nextPage.clicked.connect(self.updateOptions)
         # exclude checkboxes
         self.ignoreKana.clicked.connect(self.updateOptions)
         self.ignoreDuplicates.clicked.connect(self.updateOptions)
@@ -359,6 +362,7 @@ class GUI(QWidget):
         self.centerSize.setChecked(self.config.center())
         self.toTray.setChecked(self.config.to_tray())
         self.plastique.setChecked(self.config.plastique())
+        self.nextPage.setChecked(self.config.skip_page())
 
         self.ignoreKana.setChecked(self.config.ignore_kana())
         self.ignoreDuplicates.setChecked(self.config.ignore_duplicates())
@@ -379,6 +383,7 @@ class GUI(QWidget):
         self.config.set_save_buttons(self.saveButtons.isChecked())
         self.config.set_to_tray(self.toTray.isChecked())
         self.config.set_plastique(self.plastique.isChecked())
+        self.config.set_skip_page(self.nextPage.isChecked())
 
         self.config.set_ignore_kana(self.ignoreKana.isChecked())
         self.config.set_ignore_duplicates(self.ignoreDuplicates.isChecked())
@@ -456,7 +461,7 @@ class GUI(QWidget):
     def parsingFinished(self, success, data, pdf):
         if success:
             self.progress.hide()
-            print_document(self.input.toHtml(), data, pdf)
+            print_document(self.input.toHtml(), data, pdf, skip=self.config.skip_page())
 
     # -------------- exclude ----------------#
     def initCorpus(self):
