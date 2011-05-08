@@ -1,7 +1,7 @@
 # -*- coding=utf-8 -*-
 __author__ = 'Yadavito'
 
-__version__ = '0.1.2'
+__version__ = '0.1.4'
 
 _name = 'siteki'
 _company = 'nonbyte'
@@ -12,6 +12,9 @@ HEIGHT = 600
 
 UL_WIDTH = 480
 UL_HEIGHT = 320
+
+LS_WIDTH = 320
+LS_HEIGHT = 100
 
 page_breakline = '<div style="page-break-before:always">'
 page_end = '</div>'
@@ -39,6 +42,8 @@ PLUS = 'plus.png'
 REMOVE = 'remove.png'
 CLEAR = 'clear.png'
 PEN = 'pen.png'
+WEB = 'web.png'
+SEARCH = 'search・・・.png'
 
 # fonts
 FONT_MIN = 10
@@ -71,3 +76,6 @@ URL_NAME = 'http://corpus.leeds.ac.uk'
 # message
 TIP_VISIBLE = 3000
 STATUS_CHECK_DELAY = 1000
+
+# lyrics preview
+PREVIEW_CHARS = 150

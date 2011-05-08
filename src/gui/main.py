@@ -4,13 +4,14 @@ __author__ = 'Yadavito'
 # own #
 from gui.imessage import InfoMessage
 from gui.exlist import UserList
+from gui.seacher import LyricsSearch
 from corpus.frequency import FrequencyList
 from options.settings import Config
 from parse.verse import parse_verse, Dictionary, sift_nonj_characters, check_scripts
 from printer.printing import print_document
 from util.const import __version__, _name, WIDTH, HEIGHT,\
                         ROOT, RES, ICONS, LOGO,\
-                        PARSE, PDF, FONT, TOGGLE, EXCLUDE, OPTIONS, SHOW, QUIT,\
+                        PARSE, PDF, FONT, TOGGLE, EXCLUDE, OPTIONS, SHOW, QUIT, WEB,\
                         FONT_MAX, FONT_MIN, VERSE_FONT_SIZE, get_pretty_font,\
                         URL_NAME
 # external #
@@ -29,6 +30,7 @@ class GUI(QWidget):
         self.frequencyList = FrequencyList()
         self.message = InfoMessage(self)
         self.userList = UserList()
+        self.lyricsSearch = LyricsSearch()
 
         self.layout = QGridLayout()
 
@@ -42,6 +44,7 @@ class GUI(QWidget):
 
         self.exclude = QPushButton('E&xclude')
         self.options = QPushButton('&Options')
+        self.lyrics = QPushButton('Search for &lyrics')
 
         self.fontGroup = QGroupBox('Prettify')
         self.excludeGroup = QGroupBox('Exceptions')
@@ -126,6 +129,7 @@ class GUI(QWidget):
         # buttons again
         self.layout.addWidget(self.exclude, 6, 0, 1, 2)
         self.layout.addWidget(self.options, 6, 2, 1, 2)
+        self.layout.addWidget(self.lyrics, 7, 0, 1, 4)
 
         self.setLayout(self.layout)
 
@@ -164,6 +168,7 @@ class GUI(QWidget):
         self.toggle.setIcon(QIcon(ROOT + RES + ICONS + TOGGLE ))
         self.exclude.setIcon(QIcon(ROOT + RES + ICONS + EXCLUDE ))
         self.options.setIcon(QIcon(ROOT + RES + ICONS + OPTIONS ))
+        self.lyrics.setIcon(QIcon(ROOT + RES + ICONS + WEB))
 
         # font dialog
         self.changeSize.setRange(FONT_MIN, FONT_MAX)
@@ -199,6 +204,9 @@ class GUI(QWidget):
         # inactive
         self.onTop.setEnabled(False)
 
+        # lyrics search
+        self.lyricsSearch.setInputRef(self.input)
+
     def initActions(self):
         # analysis buttons
         self.parse.clicked.connect(self.parseNPrint)
@@ -208,6 +216,7 @@ class GUI(QWidget):
         self.font.clicked.connect(self.toggleFont)
         self.exclude.clicked.connect(self.toggleExclude)
         self.options.clicked.connect(self.toggleOptions)
+        self.lyrics.clicked.connect(self.showLyricsSearch)
         # options checkboxes
         self.onTop.clicked.connect(self.updateOptions)
         self.centerSize.clicked.connect(self.updateOptions)
@@ -443,6 +452,8 @@ class GUI(QWidget):
             QCloseEvent.ignore()
         else:
             self.saveAndQuit()
+            self.userList.close()
+            self.lyricsSearch.close()
             QCloseEvent.accept()
 
     def restoreFromTray(self, reason):
@@ -501,6 +512,10 @@ class GUI(QWidget):
 
     def showCustomExclude(self):
         self.userList.show()
+
+    # -------------- lyrics ----------------#
+    def showLyricsSearch(self):
+        self.lyricsSearch.show()
 
 ### processing threads ###
 class ParserThread(QThread):

@@ -145,7 +145,7 @@ class UserList(QWidget):
             match = self.list.findItems(self.search.text(), Qt.MatchContains)
             for item in match: self.list.setItemSelected(item, True)
 
-            if len(match) > 0: self.list.scrollToItem(match[0])
+            if not match: self.list.scrollToItem(match[0])
             self.status.setText('<b>' + str(len(match)) + '</b> items found')
         else:
             self.updateItemsCount()

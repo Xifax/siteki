@@ -49,7 +49,14 @@ class Dictionary:
         toneDown = lambda str: str.replace('(', "<font style='color: gray;'>(").replace(')', ')</font>')
         return filter (lambda e: '(P)' not in e, [toneDown(s) for s in senses ])
 
-def parse_verse(verses, dictionary, ignore=[]):
+## Compile words list.
+#  @param verses Text separated by paragraphs.
+#  @param dictionary Dictionary lookup and utilities.
+#  @param ignore Excluded items list.
+#  @return Words reading, translations in HTML
+def parse_verse(verses, dictionary, ignore=None):
+    if ignore is None:
+        ignore = []
     dictionary.load_dictionaries()
     dictionary.clear_statistics()
 
@@ -79,6 +86,11 @@ def parse_verse(verses, dictionary, ignore=[]):
 #    verse_key += NEWLINE + '\t'.join(dictionary.missed)
     return verse_key
 
+## Append new entry to words list (translation for all readings).
+#  @param key Words list.
+#  @param word Word to translate.
+#  @param lookup Edict entry.
+#  @return Updated words list.
 def update_key(key, word, lookup):
     key += "<font style='font-family: " + KEY_FONT + "; font-size: " + str(KEY_FONT_SIZE) +"pt'>" + \
             word['nform'] + '\t' + \
@@ -87,6 +99,10 @@ def update_key(key, word, lookup):
            ', '.join(Dictionary.gloss(lookup.senses)) + '</font>' + NEWLINE
     return key
 
+## Removes all characters except of Japanese.
+#  @param data Text in HTML.
+#  @param plain Plain variant of HTML text.
+#  @return Processed text in HTML.
 def sift_nonj_characters(data, plain):
     parts = scripts.script_boundaries(plain)
     for part in parts:
@@ -94,6 +110,9 @@ def sift_nonj_characters(data, plain):
             data = data.replace(part, '')
     return data
 
+## Checks if non-Japanese characters left in text.
+#  @param plain Plain text.
+#  @return True if text contains non-Japanese symbols.
 def check_scripts(plain):
     return scripts.Script.Ascii in scripts.script_types(plain)
 

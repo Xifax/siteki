@@ -20,6 +20,7 @@ Notes:
 * Stores config data in */home/user/.siteki.ini*
 * As of yet, due to uromkan glitches there is no romaji/kana conversion *(use IME instead)*
 * Corpus frequencies are normalised by sequential numbers, not by their actual frequency values
+* It is also possible to search for lyrics on *viewlyrics.com* from application itself
 
 How to use:
 

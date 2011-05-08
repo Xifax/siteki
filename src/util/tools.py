@@ -24,6 +24,8 @@ class RepeatTimer(Thread):
     def cancel(self):
         self.finished.set()
 
+## Removes all widgets from layout.
+#  @param layoutName Layout to remove widgets from.
 def unfillLayout(layoutName):
     def deleteItems(layout):
         if layout is not None:
