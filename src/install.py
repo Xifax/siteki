@@ -1,10 +1,17 @@
 # -*- coding=utf-8 -*-
 __author__ = 'Yadavito'
 
-import sys, urllib, subprocess, os
+# internal #
+import sys
+import urllib
+import subprocess
+import os
+
+# own #
+from util.const import URL_SU, URL_MECAB, URL_PYQT, packages
 
 def dlProgress(count, blockSize, totalSize):
-    percent = int(count*blockSize*100/totalSize)
+    percent = int(count * blockSize * 100 / totalSize)
     sys.stdout.write("Download progress: %d%%   \r" % percent)
 
 def downloadWithProgressbar(url):
@@ -22,7 +29,7 @@ try:
 except ImportError:
     print 'Please, install easy_install!'
     if raw_input('Download setuptools now? [y/n]: ') == ('y' or 'Y'):
-        download_and_install('http://pypi.python.org/packages/2.6/s/setuptools/setuptools-0.6c11.win32-py2.6.exe')
+        download_and_install(URL_SU)
     else: sys.exit(0)
 
 def install_with_easyinstall(package):
@@ -35,24 +42,25 @@ def install_with_easyinstall(package):
             easy_install.main(['-U', package])
             installed.append(package)
         except Exception:
-            pass
+            problematic.append(package)
 
 if __name__ == '__main__':
-    installed = []; in_system = []
-    packages = ['userconfig', 'jcconv', 'cjktools', 'cjktools-data']
+    installed = []; in_system = []; problematic = []
     for package in packages:
         install_with_easyinstall(package)
 
     # PyQt
-    try:  __import__('PyQt4')
-    except ImportError: download_and_install('http://www.riverbankcomputing.co.uk/static/Downloads/PyQt4/PyQt-Py2.6-x86-gpl-4.8.3-1.exe')
+    try:  import PyQt4
+    except ImportError: download_and_install(URL_PYQT)
     # MeCab
     if raw_input('Download and install MeCab? [y/n]: ') == ('y' or 'Y'):
-        download_and_install('http://sourceforge.net/projects/mecab/files/mecab-win32/0.98/mecab-0.98.exe/download')
+        download_and_install(URL_MECAB)
 
     print 'Install/Update complete. Status:\n'
     print '\n'.join(installed), '\n\n(total installed: ' + str(len(installed)) + ')\n'
     print '\n------------ # # # ------------\n'
     print '\n'.join(in_system), '\n\n(already in system: ' + str(len(in_system)) + ')\n'
+    print '\n------------ # # # ------------\n'
+    print '\n'.join(problematic), '\n\n(erred somehow: ' + str(len(problematic)) + ')\n'
     raw_input('Press any key and so on.')
     

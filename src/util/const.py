@@ -73,6 +73,13 @@ FREQ_LIST = 'http://corpus.leeds.ac.uk/frqc/internet-jp-forms.num'      # defaul
 FREQ_LEMMATA = 'http://corpus.leeds.ac.uk/frqc/internet-jp.num'
 URL_NAME = 'http://corpus.leeds.ac.uk'
 
+# downloads
+URL_SU = 'http://pypi.python.org/packages/2.6/s/setuptools/setuptools-0.6c11.win32-py2.6.exe'
+URL_PYQT = 'http://www.riverbankcomputing.co.uk/static/Downloads/PyQt4/PyQt-Py2.6-x86-gpl-4.8.3-1.exe'
+URL_MECAB = 'http://sourceforge.net/projects/mecab/files/mecab-win32/0.98/mecab-0.98.exe/download'
+
+packages = ['userconfig', 'jcconv', 'cjktools', 'cjktools-data', 'chardet']
+
 # message
 TIP_VISIBLE = 3000
 STATUS_CHECK_DELAY = 1000
