@@ -5,7 +5,7 @@ __author__ = 'Yadavito'
 from userconfig import UserConfig
 
 # own
-from util.const import _name, __version__
+from utility.const import _name, __version__
 
 class Config:
 

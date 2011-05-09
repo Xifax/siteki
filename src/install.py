@@ -8,7 +8,7 @@ import subprocess
 import os
 
 # own #
-from util.const import URL_SU, URL_MECAB, URL_PYQT, packages
+from utility.const import URL_SU, URL_MECAB, URL_PYQT, packages
 
 def dlProgress(count, blockSize, totalSize):
     percent = int(count * blockSize * 100 / totalSize)

@@ -7,7 +7,7 @@ from PyQt4.QtCore import Qt, QObject, QEvent, QTimer
 
 # own #
 from lyrics.grabber import LyricsGrabber
-from util.const import LS_WIDTH, LS_HEIGHT, PREVIEW_CHARS, TIP_VISIBLE,\
+from utility.const import LS_WIDTH, LS_HEIGHT, PREVIEW_CHARS, TIP_VISIBLE,\
     get_pretty_font, VERSE_FONT_SIZE, KEY_SENSE_FONT, KEY_SENSE_SIZE,\
     ROOT, RES, ICONS, SEARCH, CLEAR
 

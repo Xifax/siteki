@@ -10,7 +10,7 @@ from PyQt4.QtCore import Qt, QObject, QEvent
 from cjktools import scripts
 
 # own #
-from util.const import UL_WIDTH, UL_HEIGHT, ROOT, RES, USER, ICONS,\
+from utility.const import UL_WIDTH, UL_HEIGHT, ROOT, RES, USER, ICONS,\
                         PLUS, CLEAR, REMOVE, PEN, VERSE_FONT_SIZE, KEY_FONT_SIZE, get_pretty_font
 
 class UserList(QWidget):

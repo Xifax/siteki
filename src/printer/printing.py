@@ -7,7 +7,7 @@ from PyQt4.QtGui import QPrinter, QTextDocument, QPrintPreviewDialog
 from PyQt4.QtCore import Qt
 
 # own #
-from util.const import page_breakline, page_end, ROOT
+from utility.const import page_breakline, page_end, ROOT
 
 ## Open print preview.
 #  @param document HTML/text document.

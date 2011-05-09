@@ -9,7 +9,7 @@ from corpus.frequency import FrequencyList
 from options.settings import Config
 from parse.verse import parse_verse, Dictionary, sift_nonj_characters, check_scripts
 from printer.printing import print_document
-from util.const import __version__, _name, WIDTH, HEIGHT,\
+from utility.const import __version__, _name, WIDTH, HEIGHT,\
                         ROOT, RES, ICONS, LOGO,\
                         PARSE, PDF, FONT, TOGGLE, EXCLUDE, OPTIONS, SHOW, QUIT, WEB,\
                         FONT_MAX, FONT_MIN, VERSE_FONT_SIZE, get_pretty_font,\

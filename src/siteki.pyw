@@ -9,7 +9,7 @@ from PyQt4.QtGui import QApplication, QIcon
 
 # own #
 from gui.main import GUI
-from util.const import _name, __version__, _separator, _company,\
+from utility.const import _name, __version__, _separator, _company,\
                         ROOT, RES, ICONS, LOGO,\
                         STYLE
 
